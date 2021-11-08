@@ -3,3 +3,6 @@ node_modules/
 .nyc_output
 coverage
 build/
+poc_scripts/
+json_db/
+dist/

@@ -1,11 +1,11 @@
 {
-  "name": "movinator-api",
+  "name": "movinator",
   "version": "0.0.1",
-  "description": "API to serve questions for movinator-app",
-  "main": "./build/index.js",
+  "description": "Application to recommend movies to check out",
+  "main": "",
   "scripts": {
-    "start": "node dist/index.js",
-    "dev": "npx tsnd src/index.ts",
+    "start": "node -r dotenv/config dist/backend/application/app.js",
+    "dev": "npx tsnd -r dotenv/config src/backend/application/app.ts",
     "test": "test"
   },
   "repository": {
@@ -17,9 +17,13 @@
   "dependencies": {
     "@types/express": "^4.17.13",
     "@types/node": "^16.11.6",
+    "axios": "^0.24.0",
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
     "express": "^4.17.1"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.12",
     "@typescript-eslint/eslint-plugin": "^5.2.0",
     "@typescript-eslint/parser": "^5.2.0",
     "eslint": "^8.1.0",
