@@ -64,7 +64,7 @@ header {
 .home-button {
   position: absolute;
   left: 1.67vw;
-  top: 2.08vw;
+  top: auto;
 
   border: 0;
   width: 3.33vw;
@@ -167,7 +167,7 @@ header {
   font-family: Bebas Neue;
   font-style: normal;
   font-weight: normal;
-  font-size: 64px;
+  font-size: 3.33vw;
   justify-content: center;
   align-items: center;
   color: #ffffff;
@@ -286,13 +286,9 @@ header {
   background-image: url(https://i.ibb.co/7CwHt7j/image-7.png);
 }
 
-h1 {
-  font-size: 7.5vw;
+.title {
   margin: 0;
   font-weight: normal;
-  /* margin-block-start: 0; */
-  /* display: flex;
-  justify-content: flex-start; */
 }
 h2 {
   font-size: 1.57vw;
@@ -343,8 +339,16 @@ p {
     font-size: 2.75vh !important;
   }
 
-  #ob-2 {
+  #ob2 {
     flex-flow: column;
+  }
+
+  .text-container {
+    font-size: 3.33vh !important;
+  }
+
+  .home-button {
+    left: 1.67vh !important;
   }
 }
 

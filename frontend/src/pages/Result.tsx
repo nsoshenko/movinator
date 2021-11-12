@@ -9,6 +9,7 @@ const Result: FC = () => {
   const apiUrl = "http://192.168.0.100:3002/api/question";
   const imageUrl = "https://image.tmdb.org/t/p/w1280";
   const history = useHistory();
+  const screen = window.screen;
 
   const [result, setResult] = useState<MovieDetails>();
 
@@ -20,6 +21,17 @@ const Result: FC = () => {
 
   const choosePlaceholderPicture = (): string =>
     `/placeholders/movies_00${Math.ceil(Math.random() * 4)}.jpg`;
+
+  const calculateTitleFontSize = (title: string): string => {
+    const measureUnits =
+      screen.orientation.type === ("landscape-primary" || "landscape-secondary")
+        ? "vw"
+        : "vh";
+
+    if (title.length <= 10) return 7.5 + measureUnits;
+    if (title.length <= 30) return 3.5 + measureUnits;
+    return 2 + measureUnits;
+  };
 
   useEffect(() => {
     const sessionId = getCookieWithExpirationCheck("sessionId");
@@ -48,21 +60,35 @@ const Result: FC = () => {
               }
             >
               <div className="image-title-info-wrapper">
-                <h1>{result?.title}</h1>
+                <span
+                  style={{
+                    fontSize: `${calculateTitleFontSize(result.title)}`,
+                  }}
+                  className="title"
+                >
+                  {result.title}
+                </span>{" "}
                 <h2 className="text-margin-top">
-                  {new Date(result!.release_date).getFullYear()} |
-                  {Math.floor(result!.runtime / 60)}h {result!.runtime % 60}m |{" "}
-                  {result?.tagline}
+                  {new Date(result.release_date).getFullYear()} |
+                  {Math.floor(result.runtime / 60)}h {result.runtime % 60}m |{" "}
+                  {result.tagline}
                 </h2>
                 <h2 className="text-margin-top">
-                  TMDB: {result?.vote_average} ({result?.vote_count})
+                  TMDB: {result.vote_average} ({result?.vote_count})
                 </h2>
               </div>
             </div>
             <div className="bottom-box">
               <div className="info-container">
                 <div className="bottom-title-info-wrapper">
-                  <h1>{result.title}</h1>
+                  <span
+                    style={{
+                      fontSize: `${calculateTitleFontSize(result.title)}`,
+                    }}
+                    className="title"
+                  >
+                    {result.title}
+                  </span>
                   <h2 className="text-margin-top">
                     {new Date(result.release_date).getFullYear()} |
                     {Math.floor(result.runtime / 60)}h {result.runtime % 60}m
@@ -86,7 +112,7 @@ const Result: FC = () => {
               </div>
               <div className="description-container">
                 <div className="description-text-wrapper">
-                  <p>{result?.overview}</p>
+                  <p>{result.overview}</p>
                 </div>
                 <div className="button-container">
                   <div className="button-label">Similar movie</div>

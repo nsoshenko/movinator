@@ -16,7 +16,7 @@ import {
 
 const Question: FC = () => {
   const apiUrl = "http://192.168.0.100:3002/api/question";
-  const imageUrl = "https://image.tmdb.org/t/p/w1280";
+  const imageUrl = "https://image.tmdb.org/t/p/w780";
   const history = useHistory();
 
   const [questionData, setQuestionData] = useState<QuestionResponse>();
@@ -26,7 +26,11 @@ const Question: FC = () => {
   const fetchQuestion = useCallback(
     async (sessionId?: string, answerData?: QuestionResponse) => {
       const processQuestionResponse = (response: QuestionResponse) => {
-        setCookieWithExpiration("sessionId", response.sessionId, 1000 * 60);
+        setCookieWithExpiration(
+          "sessionId",
+          response.sessionId,
+          1000 * 60 * 10
+        );
         const question = response.question;
         setQuestionData(response);
         setOptionNames(question.options.map((option) => option.name));
@@ -94,6 +98,7 @@ const Question: FC = () => {
             <OptionBox
               backgroundUrl={optionPictures[1]}
               onClickHandler={sendAnswer}
+              id="ob2"
             >
               {optionNames[1]}
             </OptionBox>
