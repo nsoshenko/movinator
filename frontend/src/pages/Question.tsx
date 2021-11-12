@@ -15,7 +15,7 @@ import {
 } from "../utils/cookies";
 
 const Question: FC = () => {
-  const apiUrl = "http://192.168.0.100:3002/api/question";
+  const apiUrl = "http://localhost:3002/api/question";
   const imageUrl = "https://image.tmdb.org/t/p/w780";
   const history = useHistory();
 

@@ -6,7 +6,7 @@ import { MovieDetails, ResultResponse } from "../types/types";
 import { getCookieWithExpirationCheck } from "../utils/cookies";
 
 const Result: FC = () => {
-  const apiUrl = "http://192.168.0.100:3002/api/question";
+  const apiUrl = "http://localhost:3002/api/question";
   const imageUrl = "https://image.tmdb.org/t/p/w1280";
   const history = useHistory();
   const screen = window.screen;
