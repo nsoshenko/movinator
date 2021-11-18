@@ -1,4 +1,4 @@
-import { Movie, MovieDetails, MovieProperty } from "../domain/types/types";
+import { Movie, MovieProperty } from "../domain/types/types";
 import { MIN_VOTE_COUNT_FOR_RATING } from "./types/constants";
 
 type MoviePredicate = (movie: Movie) => boolean;
@@ -12,7 +12,7 @@ const isArrayMovieProp = (prop: MovieProperty): prop is ArrayMovieProp =>
     prop as ArrayMovieProp
   );
 
-// Needed complicated predicate
+// Main generic predicate to filter by property
 export const isProperty = (prop: MovieProperty, value: number | string) => {
   console.log(`Checking property: ${value}`);
   if (isArrayMovieProp(prop)) {
@@ -38,15 +38,19 @@ export const isProperty = (prop: MovieProperty, value: number | string) => {
   return (movie: Movie) => (movie[prop] ? movie[prop] == value : false);
 };
 
+// Utility to negate predicate results
 const negatePredicate = (predicate: MoviePredicate) => (movie: Movie) =>
   !predicate(movie);
 
+// Negated predicate for excluding matched properties
 const isNotProperty = (prop: MovieProperty, value: number | string) =>
   negatePredicate(isProperty(prop, value));
 
+// Utility to combine any number of predicates
 const combinePredicates = (predicates: MoviePredicate[]) => (movie: Movie) =>
   predicates.every((predicate) => predicate(movie));
 
+// Predicate to exclude movies for reverse filtering
 export const excludeMovies = (
   prop: MovieProperty,
   values: [string | number, string | number]
@@ -56,8 +60,10 @@ export const excludeMovies = (
     isNotProperty(prop, values[1]),
   ]);
 
+// Predicate to check if movies has image
 const hasBackdrop = (movie: Movie) => !!movie.backdrop_path;
 
+// Version of main filter predicate with images
 export const isPropertyWithImages = (
   prop: MovieProperty,
   value: string | number
