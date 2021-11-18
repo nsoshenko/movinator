@@ -131,6 +131,7 @@ const prepareMovieResult = (id: number): MovieResult => {
         return final;
       }, [])
       .slice(0, 10);
+    // Find a way to implement movie director search
     const resultMovieDetailsWithCast = {
       ...resultMovieDetails,
       cast: resultMovieCast,

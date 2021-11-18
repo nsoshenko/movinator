@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.answerProcessor = void 0;
+exports.movieExcludeFilter = exports.movieFilter = exports.answerProcessor = void 0;
 var constants_1 = require("./types/constants");
 var mappings_1 = require("./types/mappings");
 // Function, which handles all the business logic related to answer from user
@@ -38,11 +38,11 @@ var filterOutNotSelectedOptions = function (session, storage, property, options)
             final.push(current.id);
         return final;
     }, []);
-    var filteredArray = movieExcludeFilter(property, notSelectedOptions, storage);
+    var filteredArray = (0, exports.movieExcludeFilter)(property, notSelectedOptions, storage);
     return session.setMovies(filteredArray);
 };
 var filterForSelectedOption = function (session, storage, property, chosenOption) {
-    var filteredArray = movieFilter(property, chosenOption.id, storage);
+    var filteredArray = (0, exports.movieFilter)(property, chosenOption.id, storage);
     return session.setMovies(filteredArray);
 };
 // Universal utility function, which filters storage by ID of any type
@@ -76,6 +76,7 @@ var movieFilter = function (prop, value, inputArr) {
     })();
     return filteredArray;
 };
+exports.movieFilter = movieFilter;
 // Universal utility function, which excludes movies from storage by 2 IDs of same type
 var movieExcludeFilter = function (prop, values, inputArr) {
     var filteredArray = (function () {
@@ -105,6 +106,7 @@ var movieExcludeFilter = function (prop, values, inputArr) {
     })();
     return filteredArray;
 };
+exports.movieExcludeFilter = movieExcludeFilter;
 // Brutal assertion that particular movie property is number[].
 // Needed due to the fact TS can't understand it after Array.isArray(property) check.
 var propertyIsNumberArray = function (property) { return property; };

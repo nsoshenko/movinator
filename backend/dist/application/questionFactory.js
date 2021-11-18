@@ -47,11 +47,12 @@ var types_1 = require("./types/types");
 var tmdbApi_1 = __importDefault(require("./tmdbApi"));
 var types_2 = require("../domain/types/types");
 var mappings_1 = require("./types/mappings");
+var answerProcessor_1 = require("./answerProcessor");
 var questionIdCounter = 1; // Needed to generate questionIds
 var api = new tmdbApi_1.default();
 // Question factory flow
 var questionFactory = function (defaultOptions, movieStorage, session) { return __awaiter(void 0, void 0, void 0, function () {
-    var notNeededQuestionTypes, options, _a, cleanedOptions, bestCandidates, chosenCandidate, questionDetails, _b, candidateWithDetails, question;
+    var notNeededQuestionTypes, options, _a, cleanedOptions, bestCandidates, chosenCandidate, questionDetails, _b, questionDetailsWithImages, candidateWithDetails, question;
     return __generator(this, function (_c) {
         switch (_c.label) {
             case 0:
@@ -86,10 +87,18 @@ var questionFactory = function (defaultOptions, movieStorage, session) { return 
                 _c.label = 6;
             case 6:
                 questionDetails = _b;
+                questionDetailsWithImages = questionDetails.map(function (option) {
+                    if (!option.imageUrl)
+                        option.imageUrl = getBackdropFromInternalStorage(
+                        // session.getMovies().length > 0
+                        //   ? session.getMovies()
+                        movieStorage.getAllMovies(), movieStorage, chosenCandidate[0], option.id);
+                    return option;
+                });
                 candidateWithDetails = [
                     chosenCandidate[0],
                     chosenCandidate[1],
-                    questionDetails,
+                    questionDetailsWithImages,
                 ];
                 console.log("CANDIDATE WITH DETAILS");
                 console.log(candidateWithDetails);
@@ -217,6 +226,12 @@ var getOptionDetailsWithFallback = function (movieStorage, type, id) { return __
                             name: optionDetails.name,
                             imageUrl: optionDetails.profile_path,
                         }];
+                else if ((0, types_2.isGenreDetails)(optionDetails))
+                    return [2 /*return*/, {
+                            id: optionDetails.id,
+                            name: optionDetails.name,
+                            imageUrl: optionDetails.backdrop_path[Math.floor(Math.random() * optionDetails.backdrop_path.length)],
+                        }];
                 return [2 /*return*/, { id: optionDetails.id, name: optionDetails.name }];
             case 2:
                 error_1 = _a.sent();
@@ -228,8 +243,16 @@ var getOptionDetailsWithFallback = function (movieStorage, type, id) { return __
                 return [4 /*yield*/, getOptionDetailsFromApi(type, endpoint, id)];
             case 4:
                 optionDetails = _a.sent();
-                if (optionDetails)
+                if (optionDetails) {
+                    if ((0, types_2.isPersonDetails)(optionDetails) &&
+                        optionDetails.profile_path !== null)
+                        return [2 /*return*/, {
+                                id: optionDetails.id,
+                                name: optionDetails.name,
+                                imageUrl: optionDetails.profile_path,
+                            }];
                     return [2 /*return*/, { id: optionDetails.id, name: optionDetails.name }];
+                }
                 return [3 /*break*/, 6];
             case 5:
                 error_2 = _a.sent();
@@ -303,6 +326,21 @@ var createOptionNames = function (options) {
             name: option,
         };
     });
+};
+var getBackdropFromInternalStorage = function (inputArr, storage, type, id) {
+    console.log("GETTING BACKDROP FOR " + id + " OF " + type);
+    var movies = (0, answerProcessor_1.movieFilter)(mappings_1.questionTypeToMovieProperty[type], id, inputArr)
+        .sort(function (a, b) { return b.vote_average - a.vote_average; })
+        .slice(0, 1000);
+    var randomMovieId = movies[Math.floor(Math.random() * movies.length)].id;
+    var backdrop = null;
+    var loopBreaker = 0;
+    do {
+        var randomMovie = storage.getFullMovieDetailsById(randomMovieId);
+        backdrop = randomMovie.backdrop_path;
+        loopBreaker++;
+    } while (backdrop === null && loopBreaker < 10000);
+    return backdrop;
 };
 var questionFormatter = function (candidate) {
     var question = {

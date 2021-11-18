@@ -79,6 +79,7 @@ export const questionFactory = async (
           chosenCandidate[2]
         )
       : createOptionNames(chosenCandidate[2]);
+
     const questionDetailsWithImages = questionDetails.map((option) => {
       if (!option.imageUrl)
         option.imageUrl = getBackdropFromInternalStorage(
@@ -342,7 +343,7 @@ const getBackdropFromInternalStorage = (
   console.log(`GETTING BACKDROP FOR ${id} OF ${type}`);
   const movies = movieFilter(questionTypeToMovieProperty[type], id, inputArr)
     .sort((a, b) => b.vote_average - a.vote_average)
-    .slice(0, 100);
+    .slice(0, 1000);
   const randomMovieId = movies[Math.floor(Math.random() * movies.length)].id;
   let backdrop: string | null = null;
   let loopBreaker = 0;
@@ -350,7 +351,7 @@ const getBackdropFromInternalStorage = (
     const randomMovie = storage.getFullMovieDetailsById(randomMovieId);
     backdrop = randomMovie!.backdrop_path;
     loopBreaker++;
-  } while (backdrop === null && loopBreaker < 1000);
+  } while (backdrop === null && loopBreaker < 10000);
   return backdrop;
 };
 

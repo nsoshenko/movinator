@@ -173,6 +173,7 @@ var prepareMovieResult = function (id) {
             return final;
         }, [])
             .slice(0, 10);
+        // Find a way to implement movie director search
         var resultMovieDetailsWithCast = __assign(__assign({}, resultMovieDetails), { cast: resultMovieCast });
         return resultMovieDetailsWithCast;
     }
