@@ -15,6 +15,7 @@ import { Movie, MovieResult } from "../domain/types/types";
 import { weightedRandomizer } from "../utils/utils";
 import { questionFactory } from "./questionFactory";
 import { answerProcessor } from "./answerProcessor";
+import TmdbApi from "./tmdbApi";
 
 // Initialize in-mem storage from JSON files on HDD
 const movieStorage: MovieStorage = new MovieStorage(
@@ -28,6 +29,8 @@ const movieStorage: MovieStorage = new MovieStorage(
 );
 
 const allSessionsStorage: SessionStorage = new SessionStorage();
+
+const api = new TmdbApi();
 
 var defaultOptions: Options = {}; // Needed not to do a full optionsCounter on each session start
 
@@ -102,6 +105,28 @@ export const questionPostHandler = async (
   else return new Error("No question was returned from POST request");
 };
 
+export const similarMovieHandler = async (
+  requestData: OnlyIdRequest
+): Promise<ResultResponse | Error> => {
+  const session = allSessionsStorage.getSessionById(requestData.sessionId);
+  if (!session) throw new Error("No session found");
+  if (!session.isFinished()) throw new Error("Session is not finished");
+  if (!session.result)
+    throw new Error("Session is finished, but no result found");
+  const sessionResultId = session.result;
+  const recommendations = await getRecommendationsFromApi(sessionResultId);
+  for (const id of recommendations) {
+    const movieResult = prepareMovieResult(
+      Math.floor(Math.random() * recommendations.length)
+    );
+    if (movieResult) {
+      session.finishSession(id);
+      return { sessionId: session.id, result: movieResult };
+    }
+  }
+  throw new Error("No recommendations found");
+};
+
 const readyToFinish = (session: Session, finishThreshold: number): boolean =>
   session.getMoviesSize() <= finishThreshold;
 
@@ -144,4 +169,12 @@ const prepareMovieResult = (id: number): MovieResult => {
 export const initializeDefaultCounters = async () => {
   const options = await optionsCounter(movieStorage.getAllMovies());
   defaultOptions = options;
+};
+
+const getRecommendationsFromApi = async (id: number): Promise<number[]> => {
+  const response = await api.instance.get(
+    `/movie/${id}/recommendations?api_key=${api.key}`
+  );
+  const recommendations = response.data.results as Movie[];
+  return recommendations.map((movie) => movie.id);
 };

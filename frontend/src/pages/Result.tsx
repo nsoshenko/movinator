@@ -6,17 +6,34 @@ import { MovieDetails, ResultResponse } from "../types/types";
 import { getCookieWithExpirationCheck } from "../utils/cookies";
 
 const Result: FC = () => {
-  const apiUrl = "http://localhost:3002/api/question";
+  const apiUrl = "http://localhost:3002/api/";
   const imageUrl = "https://image.tmdb.org/t/p/w1280";
   const history = useHistory();
 
   const [result, setResult] = useState<MovieDetails>();
 
   const fetchResult = useCallback(async (sessionId: string) => {
-    const response = await axios.post(apiUrl, { sessionId: sessionId });
+    const response = await axios.post(apiUrl + "question", {
+      sessionId: sessionId,
+    });
     const responseData = response.data as unknown as ResultResponse;
     setResult(responseData.result);
   }, []);
+
+  // Refarctor if for DRY, please
+  const fetchSimilarMovie = useCallback(async (sessionId: string) => {
+    const response = await axios.post(apiUrl + "similar", {
+      sessionId: sessionId,
+    });
+    const responseData = response.data as unknown as ResultResponse;
+    setResult(responseData.result);
+  }, []);
+
+  const handleClick = (): void => {
+    const sessionId = getCookieWithExpirationCheck("sessionId");
+    if (sessionId) fetchSimilarMovie(sessionId);
+    else history.push("/");
+  };
 
   const choosePlaceholderPicture = (): string =>
     `/placeholders/movies_00${Math.ceil(Math.random() * 4)}.jpg`;
@@ -113,7 +130,7 @@ const Result: FC = () => {
                 </div>
                 <div className="button-container">
                   <div className="button-label">Similar movie</div>
-                  <button id="similar-button"></button>
+                  <button id="similar-button" onClick={handleClick}></button>
                 </div>
               </div>
             </div>

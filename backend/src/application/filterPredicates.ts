@@ -60,7 +60,7 @@ export const excludeMovies = (
     isNotProperty(prop, values[1]),
   ]);
 
-// Predicate to check if movies has image
+// Predicate to check if movie has image
 const hasBackdrop = (movie: Movie) => !!movie.backdrop_path;
 
 // Version of main filter predicate with images

@@ -5,6 +5,7 @@ import {
   questionGetHandler,
   questionPostHandler,
   sessionCheckHandler,
+  similarMovieHandler,
 } from "./main";
 
 const app: Application = express();
@@ -81,7 +82,24 @@ app.post(
       });
     } catch (err) {
       console.log(err);
-      return res.status(404).send("Session not found");
+      return res.status(404).send(err);
+    }
+  }
+);
+
+app.post(
+  "/api/similar",
+  async (req: Request, res: Response): Promise<Response> => {
+    console.log("Request for similar movie");
+    try {
+      const response = await similarMovieHandler(req.body);
+      console.log(response);
+      return res.status(200).send({
+        ...response,
+      });
+    } catch (err) {
+      console.log(err);
+      return res.status(404).send(err);
     }
   }
 );
