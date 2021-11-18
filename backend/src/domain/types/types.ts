@@ -50,6 +50,7 @@ export type Movie = Pick<
   | "cast"
   | "crew"
   | "keyword_ids"
+  | "backdrop_path"
 >;
 
 export type MovieResult = Omit<MovieDetails, "cast"> & {

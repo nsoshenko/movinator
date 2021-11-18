@@ -1,40 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.isPropertyWithImages = exports.excludeMovies = exports.isProperty = void 0;
 var constants_1 = require("./types/constants");
-var movies = [
-    {
-        id: 1,
-        original_language: "en",
-        cast: [1, 2],
-    },
-    {
-        id: 2,
-        original_language: "es",
-        cast: [2, 9],
-    },
-    {
-        id: 3,
-        original_language: "ru",
-        cast: [1],
-    },
-];
 var isArrayMovieProp = function (prop) {
-    return ["cast", "crew", "genre_ids"].includes(prop);
-};
-// Basic predicate for understanding
-var isEnglish = function (movie) {
-    return movie.original_language === "en";
-};
-var negatePredicate = function (predicate) { return function (movie) {
-    return !predicate(movie);
-}; };
-var isNotEnglish = negatePredicate(isEnglish);
-// Predicate with property for understanding
-var isLanguage = function (language) { return function (movie) {
-    return movie.original_language === language;
-}; };
-var isNotLanguage = function (language) {
-    return negatePredicate(isLanguage(language));
+    return ["cast", "crew", "genre_ids", "keywords_ids"].includes(prop);
 };
 // Needed complicated predicate
 var isProperty = function (prop, value) {
@@ -63,28 +32,26 @@ var isProperty = function (prop, value) {
                 return false;
         };
     }
-    return function (movie) {
-        return movie[prop] ? movie[prop] == value : false;
-    };
+    return function (movie) { return (movie[prop] ? movie[prop] == value : false); };
 };
+exports.isProperty = isProperty;
+var negatePredicate = function (predicate) { return function (movie) {
+    return !predicate(movie);
+}; };
 var isNotProperty = function (prop, value) {
-    return negatePredicate(isProperty(prop, value));
+    return negatePredicate((0, exports.isProperty)(prop, value));
 };
-var combinePredicates = function (predicate1, predicate2) {
-    return function (movie) {
-        return predicate1(movie) && predicate2(movie);
-    };
-};
-var combinePredicates2 = function (predicates) { return function (movie) {
+var combinePredicates = function (predicates) { return function (movie) {
     return predicates.every(function (predicate) { return predicate(movie); });
 }; };
 var excludeMovies = function (prop, values) {
-    return combinePredicates2([
+    return combinePredicates([
         isNotProperty(prop, values[0]),
         isNotProperty(prop, values[1]),
     ]);
 };
+exports.excludeMovies = excludeMovies;
 var hasBackdrop = function (movie) { return !!movie.backdrop_path; };
-// console.log(movies.filter(isProperty("cast", "1")));
-console.log(movies.filter(excludeMovies("cast", ["3", "9"])));
-//# sourceMappingURL=test.js.map
+var isPropertyWithImages = function (prop, value) { return combinePredicates([(0, exports.isProperty)(prop, value), hasBackdrop]); };
+exports.isPropertyWithImages = isPropertyWithImages;
+//# sourceMappingURL=filterPredicates.js.map

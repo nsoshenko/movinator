@@ -12,7 +12,6 @@ import {
   QuestionNeedsDetails,
   Option,
   doesQuestionNeedDetails,
-  isAnswerRequest,
 } from "./types/types";
 import TmdbApi from "./tmdbApi";
 import MovieStorage from "../storage/Storage";
@@ -29,7 +28,7 @@ import {
   questionTypeToMovieProperty,
   TmdbEndpoint,
 } from "./types/mappings";
-import { movieFilter } from "./answerProcessor";
+import { isPropertyWithImages } from "./filterPredicates";
 
 var questionIdCounter = 1; // Needed to generate questionIds
 const api = new TmdbApi();
@@ -86,7 +85,6 @@ export const questionFactory = async (
           // session.getMovies().length > 0
           //   ? session.getMovies()
           movieStorage.getAllMovies(),
-          movieStorage,
           chosenCandidate[0],
           option.id as string
         );
@@ -336,23 +334,18 @@ const createOptionNames = (options: string[]): Option[] =>
 
 const getBackdropFromInternalStorage = (
   inputArr: readonly Movie[],
-  storage: MovieStorage,
   type: QuestionType,
   id: string
 ): string => {
   console.log(`GETTING BACKDROP FOR ${id} OF ${type}`);
-  const movies = movieFilter(questionTypeToMovieProperty[type], id, inputArr)
+  const movies = inputArr
+    .filter(isPropertyWithImages(questionTypeToMovieProperty[type], id))
     .sort((a, b) => b.vote_average - a.vote_average)
     .slice(0, 1000);
-  const randomMovieId = movies[Math.floor(Math.random() * movies.length)].id;
-  let backdrop: string | null = null;
-  let loopBreaker = 0;
-  do {
-    const randomMovie = storage.getFullMovieDetailsById(randomMovieId);
-    backdrop = randomMovie!.backdrop_path;
-    loopBreaker++;
-  } while (backdrop === null && loopBreaker < 10000);
-  return backdrop;
+  const randomMovie = movies[Math.floor(Math.random() * movies.length)];
+  console.log(randomMovie);
+  const randomMovieBackdrop = randomMovie.backdrop_path;
+  return randomMovieBackdrop;
 };
 
 const questionFormatter = (

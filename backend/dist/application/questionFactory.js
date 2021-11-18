@@ -47,7 +47,7 @@ var types_1 = require("./types/types");
 var tmdbApi_1 = __importDefault(require("./tmdbApi"));
 var types_2 = require("../domain/types/types");
 var mappings_1 = require("./types/mappings");
-var answerProcessor_1 = require("./answerProcessor");
+var filterPredicates_1 = require("./filterPredicates");
 var questionIdCounter = 1; // Needed to generate questionIds
 var api = new tmdbApi_1.default();
 // Question factory flow
@@ -92,7 +92,7 @@ var questionFactory = function (defaultOptions, movieStorage, session) { return 
                         option.imageUrl = getBackdropFromInternalStorage(
                         // session.getMovies().length > 0
                         //   ? session.getMovies()
-                        movieStorage.getAllMovies(), movieStorage, chosenCandidate[0], option.id);
+                        movieStorage.getAllMovies(), chosenCandidate[0], option.id);
                     return option;
                 });
                 candidateWithDetails = [
@@ -327,20 +327,16 @@ var createOptionNames = function (options) {
         };
     });
 };
-var getBackdropFromInternalStorage = function (inputArr, storage, type, id) {
+var getBackdropFromInternalStorage = function (inputArr, type, id) {
     console.log("GETTING BACKDROP FOR " + id + " OF " + type);
-    var movies = (0, answerProcessor_1.movieFilter)(mappings_1.questionTypeToMovieProperty[type], id, inputArr)
+    var movies = inputArr
+        .filter((0, filterPredicates_1.isPropertyWithImages)(mappings_1.questionTypeToMovieProperty[type], id))
         .sort(function (a, b) { return b.vote_average - a.vote_average; })
         .slice(0, 1000);
-    var randomMovieId = movies[Math.floor(Math.random() * movies.length)].id;
-    var backdrop = null;
-    var loopBreaker = 0;
-    do {
-        var randomMovie = storage.getFullMovieDetailsById(randomMovieId);
-        backdrop = randomMovie.backdrop_path;
-        loopBreaker++;
-    } while (backdrop === null && loopBreaker < 10000);
-    return backdrop;
+    var randomMovie = movies[Math.floor(Math.random() * movies.length)];
+    console.log(randomMovie);
+    var randomMovieBackdrop = randomMovie.backdrop_path;
+    return randomMovieBackdrop;
 };
 var questionFormatter = function (candidate) {
     var question = {
