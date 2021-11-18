@@ -9,7 +9,6 @@ const Result: FC = () => {
   const apiUrl = "http://localhost:3002/api/question";
   const imageUrl = "https://image.tmdb.org/t/p/w1280";
   const history = useHistory();
-  const screen = window.screen;
 
   const [result, setResult] = useState<MovieDetails>();
 
@@ -23,10 +22,8 @@ const Result: FC = () => {
     `/placeholders/movies_00${Math.ceil(Math.random() * 4)}.jpg`;
 
   const calculateTitleFontSize = (title: string): string => {
-    const measureUnits =
-      screen.orientation.type === ("landscape-primary" || "landscape-secondary")
-        ? "vw"
-        : "vh";
+    const screenOrientation = window.matchMedia("(orientation: landscape)");
+    const measureUnits = screenOrientation.matches ? "vw" : "vh";
 
     if (title.length <= 10) return 7.5 + measureUnits;
     if (title.length <= 30) return 3.5 + measureUnits;
