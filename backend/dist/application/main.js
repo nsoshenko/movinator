@@ -50,7 +50,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.initializeDefaultCounters = exports.questionPostHandler = exports.questionGetHandler = exports.sessionCheckHandler = void 0;
+exports.initializeDefaultCounters = exports.similarMovieHandler = exports.questionPostHandler = exports.questionGetHandler = exports.sessionCheckHandler = void 0;
 var optionsCounter_1 = require("./optionsCounter");
 var constants_1 = require("./types/constants");
 var Storage_1 = __importDefault(require("../storage/Storage"));
@@ -59,6 +59,7 @@ var types_1 = require("./types/types");
 var utils_1 = require("../utils/utils");
 var questionFactory_1 = require("./questionFactory");
 var answerProcessor_1 = require("./answerProcessor");
+var tmdbApi_1 = __importDefault(require("./tmdbApi"));
 // Initialize in-mem storage from JSON files on HDD
 var movieStorage = new Storage_1.default(process.env.MOVIE_DB_PATH, {
     genres: process.env.GENRES_DB_PATH,
@@ -67,6 +68,7 @@ var movieStorage = new Storage_1.default(process.env.MOVIE_DB_PATH, {
     keywords: process.env.KEYWORDS_DB_PATH,
 });
 var allSessionsStorage = new SessionStorage_1.default();
+var api = new tmdbApi_1.default();
 var defaultOptions = {}; // Needed not to do a full optionsCounter on each session start
 // Check session endpoint handler
 var sessionCheckHandler = function (sessionData) { return __awaiter(void 0, void 0, void 0, function () {
@@ -150,6 +152,35 @@ var questionPostHandler = function (requestData) { return __awaiter(void 0, void
     });
 }); };
 exports.questionPostHandler = questionPostHandler;
+var similarMovieHandler = function (requestData) { return __awaiter(void 0, void 0, void 0, function () {
+    var session, sessionResultId, recommendations, _i, recommendations_1, id, movieResult;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                session = allSessionsStorage.getSessionById(requestData.sessionId);
+                if (!session)
+                    throw new Error("No session found");
+                if (!session.isFinished())
+                    throw new Error("Session is not finished");
+                if (!session.result)
+                    throw new Error("Session is finished, but no result found");
+                sessionResultId = session.result;
+                return [4 /*yield*/, getRecommendationsFromApi(sessionResultId)];
+            case 1:
+                recommendations = _a.sent();
+                for (_i = 0, recommendations_1 = recommendations; _i < recommendations_1.length; _i++) {
+                    id = recommendations_1[_i];
+                    movieResult = prepareMovieResult(Math.floor(Math.random() * recommendations.length));
+                    if (movieResult) {
+                        session.finishSession(id);
+                        return [2 /*return*/, { sessionId: session.id, result: movieResult }];
+                    }
+                }
+                throw new Error("No recommendations found");
+        }
+    });
+}); };
+exports.similarMovieHandler = similarMovieHandler;
 var readyToFinish = function (session, finishThreshold) {
     return session.getMoviesSize() <= finishThreshold;
 };
@@ -194,4 +225,16 @@ var initializeDefaultCounters = function () { return __awaiter(void 0, void 0, v
     });
 }); };
 exports.initializeDefaultCounters = initializeDefaultCounters;
+var getRecommendationsFromApi = function (id) { return __awaiter(void 0, void 0, void 0, function () {
+    var response, recommendations;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, api.instance.get("/movie/" + id + "/recommendations?api_key=" + api.key)];
+            case 1:
+                response = _a.sent();
+                recommendations = response.data.results;
+                return [2 /*return*/, recommendations.map(function (movie) { return movie.id; })];
+        }
+    });
+}); };
 //# sourceMappingURL=main.js.map

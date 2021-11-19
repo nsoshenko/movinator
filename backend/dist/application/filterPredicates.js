@@ -2,10 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.isPropertyWithImages = exports.excludeMovies = exports.isProperty = void 0;
 var constants_1 = require("./types/constants");
+var ARRAY_MOVIE_PROPS = ["cast", "crew", "genre_ids", "keyword_ids"];
 var isArrayMovieProp = function (prop) {
-    return ["cast", "crew", "genre_ids", "keywords_ids"].includes(prop);
+    return ["cast", "crew", "genre_ids", "keyword_ids"].includes(prop);
 };
-// Needed complicated predicate
+// Main generic predicate to filter by property
 var isProperty = function (prop, value) {
     console.log("Checking property: " + value);
     if (isArrayMovieProp(prop)) {
@@ -35,15 +36,19 @@ var isProperty = function (prop, value) {
     return function (movie) { return (movie[prop] ? movie[prop] == value : false); };
 };
 exports.isProperty = isProperty;
+// Utility to negate predicate results
 var negatePredicate = function (predicate) { return function (movie) {
     return !predicate(movie);
 }; };
+// Negated predicate for excluding matched properties
 var isNotProperty = function (prop, value) {
     return negatePredicate((0, exports.isProperty)(prop, value));
 };
+// Utility to combine any number of predicates
 var combinePredicates = function (predicates) { return function (movie) {
     return predicates.every(function (predicate) { return predicate(movie); });
 }; };
+// Predicate to exclude movies for reverse filtering
 var excludeMovies = function (prop, values) {
     return combinePredicates([
         isNotProperty(prop, values[0]),
@@ -51,7 +56,9 @@ var excludeMovies = function (prop, values) {
     ]);
 };
 exports.excludeMovies = excludeMovies;
+// Predicate to check if movie has image
 var hasBackdrop = function (movie) { return !!movie.backdrop_path; };
+// Version of main filter predicate with images
 var isPropertyWithImages = function (prop, value) { return combinePredicates([(0, exports.isProperty)(prop, value), hasBackdrop]); };
 exports.isPropertyWithImages = isPropertyWithImages;
 //# sourceMappingURL=filterPredicates.js.map

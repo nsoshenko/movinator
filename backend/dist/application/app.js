@@ -134,7 +134,29 @@ app.post("/api/check", function (req, res) { return __awaiter(void 0, void 0, vo
             case 3:
                 err_3 = _a.sent();
                 console.log(err_3);
-                return [2 /*return*/, res.status(404).send("Session not found")];
+                return [2 /*return*/, res.status(404).send(err_3)];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+app.post("/api/similar", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var response, err_4;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                console.log("Request for similar movie");
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, (0, main_1.similarMovieHandler)(req.body)];
+            case 2:
+                response = _a.sent();
+                console.log(response);
+                return [2 /*return*/, res.status(200).send(__assign({}, response))];
+            case 3:
+                err_4 = _a.sent();
+                console.log(err_4);
+                return [2 /*return*/, res.status(404).send(err_4)];
             case 4: return [2 /*return*/];
         }
     });
