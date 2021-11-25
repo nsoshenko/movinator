@@ -3,17 +3,17 @@ import { FC, useCallback, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import Header from "../components/Header";
 import { MovieDetails, ResultResponse } from "../types/types";
+import { movinatorApiUrl } from "../utils/api";
 import { getCookieWithExpirationCheck } from "../utils/cookies";
 
 const Result: FC = () => {
-  const apiUrl = "http://localhost:3002/api/";
   const imageUrl = "https://image.tmdb.org/t/p/w1280";
   const history = useHistory();
 
   const [result, setResult] = useState<MovieDetails>();
 
   const fetchResult = useCallback(async (sessionId: string) => {
-    const response = await axios.post(apiUrl + "question", {
+    const response = await axios.post(movinatorApiUrl + "/question", {
       sessionId: sessionId,
     });
     const responseData = response.data as unknown as ResultResponse;
@@ -22,7 +22,7 @@ const Result: FC = () => {
 
   // Refarctor if for DRY, please
   const fetchSimilarMovie = useCallback(async (sessionId: string) => {
-    const response = await axios.post(apiUrl + "similar", {
+    const response = await axios.post(movinatorApiUrl + "/similar", {
       sessionId: sessionId,
     });
     const responseData = response.data as unknown as ResultResponse;

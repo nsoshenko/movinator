@@ -2,6 +2,7 @@ import axios from "axios";
 import { FC, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { SessionStageResponse } from "../types/types";
+import { movinatorApiUrl } from "../utils/api";
 import { getCookieWithExpirationCheck } from "../utils/cookies";
 
 const Home: FC = () => {
@@ -12,7 +13,7 @@ const Home: FC = () => {
       const sessionId = getCookieWithExpirationCheck("sessionId");
       if (sessionId) {
         try {
-          const response = await axios.post("http://localhost:3002/api/check", {
+          const response = await axios.post(movinatorApiUrl + "/check", {
             sessionId: sessionId,
           });
           if (response.status === 200) {

@@ -9,13 +9,14 @@ import {
   QuestionResponse,
   ResultResponse,
 } from "../types/types";
+import { movinatorApiUrl } from "../utils/api";
 import {
   getCookieWithExpirationCheck,
   setCookieWithExpiration,
 } from "../utils/cookies";
 
 const Question: FC = () => {
-  const apiUrl = "http://localhost:3002/api/question";
+  const apiUrl = movinatorApiUrl + "/question";
   const imageUrl = "https://image.tmdb.org/t/p/w780";
   const history = useHistory();
 
@@ -62,7 +63,7 @@ const Question: FC = () => {
         else processQuestionResponse(responseData);
       }
     },
-    [history]
+    [history, apiUrl]
   );
 
   useEffect(() => {

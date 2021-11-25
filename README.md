@@ -45,3 +45,12 @@ To test the app you have to be familliar with Terminal and have the following so
   <li>Open the root directory in Terminal (the one, which contains "/backend" and "/frontend" directories).</li>
   <li>Run <code>git pull</code></li>
 </ol>
+
+<h3>How to test app not locally, but on the network:</h3>
+<ol>
+  <li>Find out your local IP by looking at the Terminal, in which you start client app.
+  It's shown as <code>On Your Network: http://[your_local_IP_here]:3000</code>.</li>
+  <li>Open file "/frontend/src/utils/api.ts" with any text editor.</li>
+  <li>Change the variable <code>movinatorApiUrl</code> to <code>"http://[your_local_IP_here]:3002"</code>. (You need to repeat this step after each <code>git pull</code>).
+  <li>Now you can access the working client app from any device in your local network using the following url <code>http://[your_local_IP_here]:3000</code>.
+</ol>
