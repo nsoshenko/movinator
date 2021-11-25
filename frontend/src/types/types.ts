@@ -1,15 +1,16 @@
-export type SessionStageResponse = {
+type ApiResponse = {
   sessionId: string;
+};
+
+export type SessionStageResponse = ApiResponse & {
   finished: boolean;
 };
 
-export type QuestionResponse = {
-  sessionId: string;
+export type QuestionResponse = ApiResponse & {
   question: Question;
 };
 
-export type ResultResponse = {
-  sessionId: number;
+export type ResultResponse = ApiResponse & {
   result: MovieDetails;
 };
 

@@ -2,7 +2,7 @@ import axios from "axios";
 import { FC, useCallback, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import Header from "../components/Header";
-import { MovieDetails, ResultResponse } from "../types/types";
+import { MovieDetails, QuestionResponse, ResultResponse } from "../types/types";
 import { movinatorApiUrl } from "../utils/api";
 import { getCookieWithExpirationCheck } from "../utils/cookies";
 
@@ -12,13 +12,18 @@ const Result: FC = () => {
 
   const [result, setResult] = useState<MovieDetails>();
 
-  const fetchResult = useCallback(async (sessionId: string) => {
-    const response = await axios.post(movinatorApiUrl + "/question", {
-      sessionId: sessionId,
-    });
-    const responseData = response.data as unknown as ResultResponse;
-    setResult(responseData.result);
-  }, []);
+  const fetchResult = useCallback(
+    async (sessionId: string) => {
+      const response = await axios.post(movinatorApiUrl + "/question", {
+        sessionId: sessionId,
+      });
+      const responseData = response.data as unknown as ResultResponse;
+      if ((responseData as unknown as QuestionResponse).question)
+        history.push("/question");
+      setResult(responseData.result);
+    },
+    [history]
+  );
 
   // Refarctor if for DRY, please
   const fetchSimilarMovie = useCallback(async (sessionId: string) => {

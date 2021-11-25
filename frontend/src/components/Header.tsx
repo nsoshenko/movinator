@@ -10,11 +10,12 @@ const Header: FC = () => {
   };
   return (
     <header>
-      <div
+      <img
         className="home-button"
-        style={{ backgroundImage: "url(/home.png)" }}
+        src="/home.png"
+        alt="home"
         onClick={handleClick}
-      ></div>
+      ></img>
       Movinator
     </header>
   );
