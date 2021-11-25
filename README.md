@@ -39,3 +39,9 @@ To test the app you have to be familliar with Terminal and have the following so
   Local: http://localhost:3000
   On Your Network: http://192.168.0.100:3000"</li>
 </ol>
+
+<h3>How to get the latest updates:</h3>
+<ol>
+  <li>Open the root directory in Terminal (the one, which contains "/backend" and "/frontend" directories).</li>
+  <li>Run <code>git pull</code></li>
+</ol>
