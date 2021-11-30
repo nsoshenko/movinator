@@ -1,6 +1,7 @@
 import axios from "axios";
 import { FC, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
+import { isIOS } from "react-device-detect";
 import InstallationHint from "../components/InstallationHint";
 import SessionModal from "../components/SessionModal";
 import { SessionStageResponse } from "../types/types";
@@ -9,15 +10,13 @@ import { getCookieWithExpirationCheck } from "../utils/cookies";
 
 const Home: FC = () => {
   const history = useHistory();
-  const installed = window.matchMedia("(display-mode: standalone)").matches;
 
   const [showSessionModal, setShowSessionModal] = useState(false);
   const [isSessionFinished, setIsSessionFinished] = useState(false);
-  const [showInstallationHint, setShowInstallationHint] = useState(
-    !installed && !localStorage.getItem("neverShowInstallationHint")
-  );
+  const [showInstallationHint, setShowInstallationHint] = useState(false);
 
   useEffect(() => {
+    // Check session to trigger session modal if needed
     const checkExistingSession = async () => {
       const sessionId = getCookieWithExpirationCheck("sessionId");
       if (sessionId) {
@@ -40,6 +39,21 @@ const Home: FC = () => {
       }
     };
     checkExistingSession();
+
+    // Check device to trigger install hint if needed
+    const neverShowInstallationHint = getCookieWithExpirationCheck(
+      "neverShowInstallationHint"
+    );
+    if (isIOS) {
+      const installed = window.matchMedia("(display-mode: standalone)").matches;
+      if (!installed && !neverShowInstallationHint)
+        setShowInstallationHint(true);
+    } else {
+      window.addEventListener("beforeinstallprompt", () => {
+        if (!getCookieWithExpirationCheck("neverShowInstallationHint"))
+          setShowInstallationHint(true);
+      });
+    }
   }, []);
 
   const appTitle = "Movinator";
