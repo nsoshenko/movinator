@@ -25,7 +25,7 @@ const Result: FC = () => {
     [history]
   );
 
-  // Refarctor if for DRY, please
+  // Refactor it for DRY, please
   const fetchSimilarMovie = useCallback(async (sessionId: string) => {
     const response = await axios.post(movinatorApiUrl + "/similar", {
       sessionId: sessionId,
@@ -105,6 +105,7 @@ const Result: FC = () => {
                       fontSize: `${calculateTitleFontSize(result.title)}`,
                     }}
                     className="title"
+                    onClick={() => navigator.clipboard.writeText(result.title)}
                   >
                     {result.title}
                   </span>
