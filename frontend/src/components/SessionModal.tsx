@@ -10,7 +10,7 @@ const SessionModal: FC<SessionModalProps> = ({
   noOnClickHandler,
 }) => {
   return (
-    <div className="sessionModal">
+    <div className="sessionModal unselectable">
       <div className="sessionModalContent">
         <img src="/clapperboard.png" alt="clapperboardIcon" />
         <p>Want to continue your last session?</p>
