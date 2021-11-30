@@ -11,7 +11,7 @@ const Divider: FC<DividerProps> = ({ children, onClickHandler }) => {
   };
   return (
     <div className="divider">
-      <button id="other-button" onClick={handleClick}>
+      <button className="circleButton" id="other-button" onClick={handleClick}>
         {children}
       </button>
     </div>

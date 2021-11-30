@@ -55,7 +55,7 @@ header {
   font-family: Bebas Neue;
   background-color: #000000;
   color: rgba(219, 32, 44, 1);
-  font-size: 5vw;
+  font-size: 5vmax;
   justify-content: center;
   align-items: center;
   min-height: 40px;
@@ -63,16 +63,29 @@ header {
 
 .home-button {
   position: absolute;
-  left: 1.67vw;
+  left: 1.67vmax;
   top: auto;
 
   border: 0;
-  width: 3.33vw;
-  height: 3.33vw;
+  width: 3.33vmax;
+  height: 3.33vmax;
   min-width: 32px;
   min-height: 32px;
   background-size: cover;
   cursor: pointer;
+}
+
+.circleButton {
+  /* button properties */
+  border-radius: 500px;
+  border: 0;
+  cursor: pointer;
+
+  /* text properties */
+  font-family: Bebas Neue;
+  font-style: normal;
+  font-weight: normal;
+  text-align: center;
 }
 
 .footer {
@@ -105,7 +118,7 @@ header {
   display: flex;
   width: 38.75%;
   height: 43%;
-  font-size: 2.5vw;
+  font-size: 2.5vmax;
   text-align: center;
 }
 
@@ -203,6 +216,84 @@ header {
   color: white;
 }
 
+.installationHint {
+  position: absolute;
+  width: 100vw;
+  /* height: 45vh; */
+  height: auto;
+  left: 0;
+  bottom: 0;
+
+  background-color: #100e0e;
+  color: white;
+  font-family: Bebas Neue;
+  font-size: 2.5vmax;
+  line-height: 3.75vmax;
+
+  display: flex;
+  justify-content: center;
+}
+
+.installationHint .closeButton {
+  position: absolute;
+  width: 1.66vmax;
+  height: 1.66vmax;
+  right: 1vw;
+  top: 1vh;
+  cursor: pointer;
+}
+
+.installationHint .contentWrapper {
+  width: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: flex-start;
+}
+
+.installationHint ol {
+  margin: 28px 0 0;
+  padding-left: 2vmax;
+}
+
+.installationHint li img {
+  width: 2.5vmax;
+  height: 2.5vmax;
+  margin: 0 15px;
+}
+
+.installationHint form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.installationHint form input {
+  width: 1.25vmax;
+  height: 1.25vmax;
+  vertical-align: middle;
+}
+
+.installationHint form label {
+  font-size: 1.5vmax;
+  margin: -1vw 0 0 0;
+}
+
+.installationHint .circleButton {
+  /* button properties */
+  width: 5.73vmax;
+  height: 5.73vmax;
+  /* max-width: 140px;
+    max-height: 140px; */
+  background-color: #470e0e;
+  align-self: center;
+  margin-bottom: 10px;
+
+  /* text properties */
+  font-size: 2.6vmax;
+  color: #db202c;
+}
+
 /* Question screen */
 .divider {
   /* container properties */
@@ -245,24 +336,16 @@ header {
   color: #ffffff;
 }
 
-#other-button {
+.divider .circleButton {
   /* button properties */
-  display: block;
-  border-radius: 500px;
-  border: 0;
   width: 10vw;
   height: 10vw;
   /* max-width: 140px;
   max-height: 140px; */
   background: rgba(20, 20, 20, 1);
-  cursor: pointer;
 
   /* text properties */
-  font-family: Bebas Neue;
-  font-style: normal;
-  font-weight: normal;
   font-size: 2.75vw;
-  text-align: center;
   color: #db202c;
 }
 
@@ -421,10 +504,6 @@ p {
 
   .text-container {
     font-size: 3.33vh !important;
-  }
-
-  .home-button {
-    left: 1.67vh !important;
   }
 }
 

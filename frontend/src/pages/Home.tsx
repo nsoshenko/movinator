@@ -1,6 +1,7 @@
 import axios from "axios";
 import { FC, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
+import InstallationHint from "../components/InstallationHint";
 import SessionModal from "../components/SessionModal";
 import { SessionStageResponse } from "../types/types";
 import { movinatorApiUrl } from "../utils/api";
@@ -8,9 +9,13 @@ import { getCookieWithExpirationCheck } from "../utils/cookies";
 
 const Home: FC = () => {
   const history = useHistory();
+  const installed = window.matchMedia("(display-mode: standalone)").matches;
 
   const [showSessionModal, setShowSessionModal] = useState(false);
   const [isSessionFinished, setIsSessionFinished] = useState(false);
+  const [showInstallationHint, setShowInstallationHint] = useState(
+    !installed && !localStorage.getItem("neverShowInstallationHint")
+  );
 
   useEffect(() => {
     const checkExistingSession = async () => {
@@ -39,7 +44,7 @@ const Home: FC = () => {
 
   const appTitle = "Movinator";
   const appDescription =
-    "Movinator is an application that will help you choose a movie to watch, based on your preferences.";
+    "Movinator is an application that will help you choose a movie to watch, based on your preferences";
 
   const redirectHandler = (route: "/question" | "/result") => {
     history.push(route);
@@ -55,6 +60,10 @@ const Home: FC = () => {
     setShowSessionModal(false);
   };
 
+  const closeInstallationHintHandler = () => {
+    setShowInstallationHint(false);
+  };
+
   const startOnClick = () => redirectHandler("/question");
 
   return (
@@ -65,26 +74,29 @@ const Home: FC = () => {
           noOnClickHandler={noOnClickHandler}
         />
       )}
+      {showInstallationHint && (
+        <InstallationHint
+          closeInstallationHintHandler={closeInstallationHintHandler}
+        />
+      )}
       <div
-        className="container flex-column with-image-background"
+        className="container flex-column with-image-background unselectable"
         style={{
           backgroundImage:
             "linear-gradient(to top, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/home_background.jpeg')",
         }}
       >
-        <div className="title-wrapper unselectable">{appTitle}</div>
+        <div className="title-wrapper">{appTitle}</div>
         <div className="description-wrapper">
-          <div className="size-description-wrapper unselectable">
-            {appDescription}
-          </div>
+          <div className="size-description-wrapper">{appDescription}</div>
         </div>
         <div className="start-button-wrapper">
           <button type="button" id="start-button" onClick={startOnClick}>
             Start
           </button>
         </div>
-        <div className="footer"></div>
       </div>
+      <div className="footer"></div>
     </>
   );
 };
