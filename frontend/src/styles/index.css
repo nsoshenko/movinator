@@ -1,6 +1,11 @@
+html,
 body {
   margin: 0;
-  overflow: hidden;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
@@ -23,11 +28,15 @@ code {
                                   not supported by any browser */
 }
 
+#root {
+  height: 100%;
+}
+
 /* DESKTOP */
 /* Common */
 .container {
   display: flex;
-  height: 100vh;
+  height: 100%;
   background-color: black;
 }
 
@@ -37,7 +46,7 @@ code {
 }
 
 .after-header {
-  height: 87vh !important;
+  height: 87% !important;
 }
 
 .flex-column {
@@ -51,7 +60,7 @@ code {
 header {
   display: flex;
   width: 100%;
-  height: 13vh;
+  height: 13%;
   font-family: Bebas Neue;
   background-color: #000000;
   color: rgba(219, 32, 44, 1);
@@ -96,19 +105,19 @@ header {
 
 /* Home screen */
 .title-wrapper {
-  flex-basis: 10.2%;
+  flex-basis: 13%;
   display: flex;
   justify-content: center;
   align-items: center;
 
   font-family: Bebas Neue;
   color: rgba(219, 32, 44, 1);
-  font-size: 4vw;
+  font-size: 5vmax;
 }
 
 .description-wrapper {
   display: flex;
-  flex-basis: 53.9%;
+  flex-basis: 62.36%;
   justify-content: center;
   align-items: center;
 
@@ -356,7 +365,7 @@ header {
   /* background-color: cornsilk; */
   background-size: cover;
   position: absolute;
-  top: 13vh;
+  top: 13%;
   right: 0px;
   bottom: 0px;
   left: 0px;
@@ -365,7 +374,7 @@ header {
 .bottom-box {
   /* background-color: darkgreen; */
   background: linear-gradient(to top, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5));
-  flex-basis: 51.9vh;
+  flex-basis: 51.9%;
   display: flex;
   justify-content: space-between;
   padding-left: 1.04vw;
@@ -392,7 +401,7 @@ header {
   font-family: Bebas Neue;
   color: white;
   width: 62.8%;
-  margin-bottom: 5.13vh;
+  margin-bottom: 5.13%;
 
   justify-content: flex-start;
   align-content: flex-start;
@@ -473,11 +482,12 @@ p {
 
   /* Home screen */
   .title-wrapper {
-    font-size: 8vh !important;
+    flex-basis: 7.37% !important;
+    font-size: 6.1vh !important;
   }
 
   .description-wrapper {
-    flex-basis: 70.3% !important;
+    flex-basis: 73.13% !important;
   }
 
   .size-description-wrapper {
@@ -518,7 +528,7 @@ p {
   }
 
   .after-header {
-    height: 90.8vh !important;
+    height: 92.63% !important;
   }
 
   /* Home screen */
@@ -533,14 +543,14 @@ p {
 
   /* Result screen */
   header {
-    height: 7.37vh;
-    font-size: 8vh;
+    height: 7.37%;
+    font-size: 6.1vh;
   }
 
   .image-container {
     position: relative !important;
     flex-basis: 30.8%;
-    top: 0% !important;
+    top: 0 !important;
 
     display: flex;
     flex-flow: column-reverse;
@@ -615,19 +625,19 @@ p {
   }
 
   .after-header {
-    height: 90.8vh !important;
+    height: 92.63% !important;
   }
 
   /* Result screen */
   header {
-    height: 7.37vh;
-    font-size: 8vh;
+    height: 7.37%;
+    font-size: 6.1vh;
   }
 
   .image-container {
     position: relative !important;
     flex-basis: 44.02% !important;
-    top: 0% !important;
+    top: 0 !important;
 
     display: flex;
     flex-flow: column-reverse;
