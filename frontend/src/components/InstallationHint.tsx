@@ -1,5 +1,6 @@
 import { FC, FormEvent, useEffect, useState } from "react";
 import { BrowserView, MobileView } from "react-device-detect";
+import { setCookieWithExpiration } from "../utils/cookies";
 
 type InstallationHintProps = {
   closeInstallationHintHandler: () => void;
@@ -47,7 +48,12 @@ const InstallationHint: FC<InstallationHintProps> = ({
 
   const okOnClickHandler = (e: FormEvent) => {
     e.preventDefault();
-    if (isChecked) localStorage.setItem("neverShowInstallationHint", "true");
+    if (isChecked)
+      setCookieWithExpiration(
+        "neverShowInstallationHint",
+        "true",
+        1000 * 60 * 60 * 24 * 90
+      );
     closeInstallationHintHandler();
   };
 
