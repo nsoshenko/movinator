@@ -97,7 +97,7 @@ const Home: FC = () => {
         className="container flex-column with-image-background unselectable"
         style={{
           backgroundImage:
-            "linear-gradient(to top, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/home_background.jpeg')",
+            "linear-gradient(to top, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/home_background_2.jpg')",
         }}
       >
         <div className="title-wrapper">{appTitle}</div>
