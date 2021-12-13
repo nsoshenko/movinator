@@ -47,6 +47,7 @@ export type MovieDetails = {
   cast: number[];
   crew: number[];
   keyword_ids: number[];
+  director: string;
 };
 
 type Question = {

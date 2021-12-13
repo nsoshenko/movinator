@@ -49,6 +49,7 @@ export default class MovieStorage {
             crew: movie.crew,
             keyword_ids: movie.keyword_ids,
             backdrop_path: movie.backdrop_path,
+            director: movie.director,
           });
         return final;
       },

@@ -119,9 +119,7 @@ const Result: FC = () => {
                   </h2>
                 </div>
                 <div className="cast-wrapper">
-                  <p className="text-margin-top">
-                    Director: Carey Joji Fukunaga
-                  </p>
+                  <p className="text-margin-top">Director: {result.director}</p>
                   <p className="text-margin-top">
                     Cast of actors:{" "}
                     {result.cast.slice(0, 10).map((item, index, arr) => {

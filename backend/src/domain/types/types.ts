@@ -31,6 +31,7 @@ export type MovieDetails = {
   cast: number[];
   crew: number[];
   keyword_ids: number[];
+  director: string;
 };
 
 export type Movie = Pick<
@@ -51,6 +52,7 @@ export type Movie = Pick<
   | "crew"
   | "keyword_ids"
   | "backdrop_path"
+  | "director"
 >;
 
 export type MovieResult = Omit<MovieDetails, "cast"> & {
@@ -58,6 +60,11 @@ export type MovieResult = Omit<MovieDetails, "cast"> & {
 };
 
 export type MovieProperty = keyof Movie;
+
+// Derive movie props of array type for movie filtering logic
+const ARRAY_MOVIE_PROPS = ["cast", "crew", "genre_ids", "keyword_ids"] as const;
+export type ArrayMovieProps = typeof ARRAY_MOVIE_PROPS;
+export type ArrayMovieProp = ArrayMovieProps[number];
 
 export type PersonDetails = BasicDetails & {
   adult: boolean;
