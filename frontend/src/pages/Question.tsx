@@ -33,15 +33,18 @@ const Question: FC = () => {
           1000 * 60 * 10
         );
         const question = response.question;
+        const choosePlaceholderImage = (type: string) => {
+          if (type === "cast")
+            return `${type}_00${Math.ceil(Math.random() * 4)}.jpg`;
+          return `${type}.jpg`;
+        };
         setQuestionData(response);
         setOptionNames(question.options.map((option) => option.name));
         setOptionPictures(
           question.options.map((option) =>
             option.imageUrl
               ? imageUrl + option.imageUrl
-              : `/placeholders/${question.type}_00${Math.ceil(
-                  Math.random() * 4
-                )}.jpg`
+              : `/placeholders/${choosePlaceholderImage(question.type)}`
           )
         );
       };
