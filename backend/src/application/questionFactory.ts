@@ -80,7 +80,11 @@ export const questionFactory = async (
       : createOptionNames(chosenCandidate[2]);
 
     const questionDetailsWithImages = questionDetails.map((option) => {
-      if (!option.imageUrl)
+      if (
+        !option.imageUrl &&
+        chosenCandidate[0] !== "cast" &&
+        chosenCandidate[0] !== "crew"
+      ) {
         option.imageUrl = getBackdropFromInternalStorage(
           // session.getMovies().length > 0
           //   ? session.getMovies()
@@ -88,6 +92,7 @@ export const questionFactory = async (
           chosenCandidate[0],
           option.id as string
         );
+      }
       return option;
     });
 

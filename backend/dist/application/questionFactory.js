@@ -88,11 +88,14 @@ var questionFactory = function (defaultOptions, movieStorage, session) { return 
             case 6:
                 questionDetails = _b;
                 questionDetailsWithImages = questionDetails.map(function (option) {
-                    if (!option.imageUrl)
+                    if (!option.imageUrl &&
+                        chosenCandidate[0] !== "cast" &&
+                        chosenCandidate[0] !== "crew") {
                         option.imageUrl = getBackdropFromInternalStorage(
                         // session.getMovies().length > 0
                         //   ? session.getMovies()
                         movieStorage.getAllMovies(), chosenCandidate[0], option.id);
+                    }
                     return option;
                 });
                 candidateWithDetails = [
