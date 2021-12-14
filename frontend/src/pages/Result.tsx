@@ -92,9 +92,11 @@ const Result: FC = () => {
                   {Math.floor(result.runtime / 60)}h {result.runtime % 60}m |{" "}
                   {result.tagline}
                 </h2>
-                <h2 className="text-margin-top">
-                  TMDB: {result.vote_average} ({result?.vote_count})
-                </h2>
+                {result.vote_count > 0 && (
+                  <h2 className="text-margin-top">
+                    TMDB: {result.vote_average} ({result.vote_count})
+                  </h2>
+                )}
               </div>
             </div>
             <div className="bottom-box">
@@ -114,18 +116,28 @@ const Result: FC = () => {
                     {Math.floor(result.runtime / 60)}h {result.runtime % 60}m
                     {result.tagline.length > 0 && "|"} {result.tagline}
                   </h2>
-                  <h2 className="text-margin-top">
-                    TMDB: {result.vote_average} ({result.vote_count})
-                  </h2>
+                  {result.vote_count > 0 && (
+                    <h2 className="text-margin-top">
+                      TMDB: {result.vote_average} ({result.vote_count})
+                    </h2>
+                  )}
                 </div>
                 <div className="cast-wrapper">
-                  <p className="text-margin-top">Director: {result.director}</p>
-                  <p className="text-margin-top">
-                    Cast of actors:{" "}
-                    {result.cast.slice(0, 10).map((item, index, arr) => {
-                      return index !== arr.length - 1 ? `${item}, ` : `${item}`;
-                    })}
-                  </p>
+                  {result.director && (
+                    <p className="text-margin-top">
+                      Director: {result.director}
+                    </p>
+                  )}
+                  {result.cast.length > 0 && (
+                    <p className="text-margin-top">
+                      Cast of actors:{" "}
+                      {result.cast.slice(0, 10).map((item, index, arr) => {
+                        return index !== arr.length - 1
+                          ? `${item}, `
+                          : `${item}`;
+                      })}
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="description-container">
