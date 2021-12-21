@@ -77,7 +77,10 @@ const Question: FC = () => {
   const sendAnswer = async (optionName: string): Promise<void> => {
     const answer = { ...questionData };
     const sessionId = getCookieWithExpirationCheck("sessionId");
-    if (sessionId !== answer.sessionId) throw Error("Session IDs discrepancy");
+    if (sessionId !== answer.sessionId) {
+      localStorage.removeItem("sessionId");
+      history.push("/");
+    }
     if (answer) {
       for (const option of answer.question!.options) {
         if (option.name === optionName) option.selected = true;
