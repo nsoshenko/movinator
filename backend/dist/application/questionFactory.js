@@ -52,9 +52,9 @@ var questionIdCounter = 1; // Needed to generate questionIds
 var api = new tmdbApi_1.default();
 // Question factory flow
 var questionFactory = function (defaultOptions, movieStorage, session) { return __awaiter(void 0, void 0, void 0, function () {
-    var notNeededQuestionTypes, options, _a, cleanedOptions, bestCandidates, chosenCandidate, questionDetails, _b, questionDetailsWithImages, candidateWithDetails, question;
-    return __generator(this, function (_c) {
-        switch (_c.label) {
+    var notNeededQuestionTypes, options, _a, cleanedOptions, bestCandidates, chosenCandidate, questionDetails, error_1, questionDetailsWithImages, candidateWithDetails, question;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
             case 0:
                 // Check if there are available question types in the pool and reset bans in other case
                 if (areAllQuestionsBanned(session, constants_1.QUESTION_TYPE_COUNT))
@@ -65,8 +65,8 @@ var questionFactory = function (defaultOptions, movieStorage, session) { return 
                 return [3 /*break*/, 3];
             case 1: return [4 /*yield*/, (0, optionsCounter_1.optionsCounter)(session.getMovies(), notNeededQuestionTypes)];
             case 2:
-                _a = _c.sent();
-                _c.label = 3;
+                _a = _b.sent();
+                _b.label = 3;
             case 3:
                 options = _a;
                 cleanedOptions = removeBannedOptions(options, session.getBannedQuestionOptions());
@@ -76,17 +76,39 @@ var questionFactory = function (defaultOptions, movieStorage, session) { return 
                 chosenCandidate = chooseQuestionType(bestCandidates);
                 console.log("CHOSEN CANDIDATE");
                 console.log(chosenCandidate);
-                if (!chosenCandidate) return [3 /*break*/, 7];
-                if (!(0, types_1.doesQuestionNeedDetails)(chosenCandidate[0])) return [3 /*break*/, 5];
-                return [4 /*yield*/, getQuestionDetails(movieStorage, chosenCandidate[0], chosenCandidate[2])];
+                if (!chosenCandidate) return [3 /*break*/, 10];
+                questionDetails = void 0;
+                if (!(0, types_1.doesQuestionNeedDetails)(chosenCandidate[0])) return [3 /*break*/, 8];
+                _b.label = 4;
             case 4:
-                _b = _c.sent();
-                return [3 /*break*/, 6];
+                _b.trys.push([4, 6, , 7]);
+                return [4 /*yield*/, getQuestionDetails(movieStorage, chosenCandidate[0], chosenCandidate[2])];
             case 5:
-                _b = createOptionNames(chosenCandidate[2]);
-                _c.label = 6;
+                questionDetails = _b.sent();
+                return [3 /*break*/, 7];
             case 6:
-                questionDetails = _b;
+                error_1 = _b.sent();
+                if (error_1 instanceof Error) {
+                    session.banQuestionOption(chosenCandidate[0], error_1.message);
+                    console.log("WILL RERUN BECAUSE OF MISSING: " + error_1.message);
+                    return [2 /*return*/, (0, exports.questionFactory)(defaultOptions, movieStorage, session)];
+                }
+                else {
+                    console.log("Can't rerun question factory!");
+                    console.log(error_1);
+                }
+                return [3 /*break*/, 7];
+            case 7: return [3 /*break*/, 9];
+            case 8:
+                questionDetails = createOptionNames(chosenCandidate[2]);
+                _b.label = 9;
+            case 9:
+                if (!questionDetails) {
+                    session.banQuestionOption(chosenCandidate[0], chosenCandidate[2][0]);
+                    session.banQuestionOption(chosenCandidate[0], chosenCandidate[2][1]);
+                    console.log("WILL RERUN BECAUSE OF MISSING DETAILS");
+                    return [2 /*return*/, (0, exports.questionFactory)(defaultOptions, movieStorage, session)];
+                }
                 questionDetailsWithImages = questionDetails.map(function (option) {
                     if (!option.imageUrl &&
                         chosenCandidate[0] !== "cast" &&
@@ -110,7 +132,7 @@ var questionFactory = function (defaultOptions, movieStorage, session) { return 
                 session.banQuestionOption(chosenCandidate[0], chosenCandidate[2][1]);
                 question = questionFormatter(candidateWithDetails);
                 return [2 /*return*/, question];
-            case 7:
+            case 10:
                 console.log("No question was chosen");
                 return [2 /*return*/, undefined];
         }
@@ -194,11 +216,14 @@ var chooseQuestionType = function (candidates) {
     return chosenOption;
 };
 var getQuestionDetails = function (movieStorage, type, options) { return __awaiter(void 0, void 0, void 0, function () {
-    var optionPromises, detailedOptions;
+    var optionPromises, detailedOptions, error_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 console.log("NEED TO GET DETAILS");
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
                 optionPromises = options.map(function (id) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0: return [4 /*yield*/, getOptionDetailsWithFallback(movieStorage, type, id)];
@@ -206,15 +231,19 @@ var getQuestionDetails = function (movieStorage, type, options) { return __await
                     }
                 }); }); });
                 return [4 /*yield*/, Promise.all(optionPromises)];
-            case 1:
+            case 2:
                 detailedOptions = _a.sent();
                 return [2 /*return*/, detailedOptions];
+            case 3:
+                error_2 = _a.sent();
+                throw error_2;
+            case 4: return [2 /*return*/];
         }
     });
 }); };
 // Wraps fallback mechanism querying API after in-mem storage if needed
 var getOptionDetailsWithFallback = function (movieStorage, type, id) { return __awaiter(void 0, void 0, void 0, function () {
-    var storageLabel, optionDetails, error_1, endpoint, optionDetails, error_2;
+    var storageLabel, optionDetails, error_3, endpoint, optionDetails, error_4;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -237,8 +266,8 @@ var getOptionDetailsWithFallback = function (movieStorage, type, id) { return __
                         }];
                 return [2 /*return*/, { id: optionDetails.id, name: optionDetails.name }];
             case 2:
-                error_1 = _a.sent();
-                console.log(error_1);
+                error_3 = _a.sent();
+                console.log(error_3);
                 _a.label = 3;
             case 3:
                 _a.trys.push([3, 5, , 6]);
@@ -258,9 +287,9 @@ var getOptionDetailsWithFallback = function (movieStorage, type, id) { return __
                 }
                 return [3 /*break*/, 6];
             case 5:
-                error_2 = _a.sent();
-                console.log(error_2);
-                return [3 /*break*/, 6];
+                error_4 = _a.sent();
+                console.log(error_4);
+                throw Error(id);
             case 6: return [3 /*break*/, 7];
             case 7: return [2 /*return*/];
         }
@@ -280,7 +309,7 @@ var getOptionDetailsFromInternalStorage = function (movieStorage, storageLabel, 
 }); };
 // Queries details of entity by ID from API in case it's missing in in-mem storage
 var getOptionDetailsFromApi = function (type, endpoint, optionId) { return __awaiter(void 0, void 0, void 0, function () {
-    var requestUrl, response, optionDetails, error_3, requestUrl, response, optionDetails, error_4;
+    var requestUrl, response, optionDetails, error_5, requestUrl, response, optionDetails, error_6;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -300,9 +329,8 @@ var getOptionDetailsFromApi = function (type, endpoint, optionId) { return __awa
                     return [2 /*return*/, optionDetails];
                 return [3 /*break*/, 4];
             case 3:
-                error_3 = _a.sent();
-                console.log(error_3);
-                return [3 /*break*/, 4];
+                error_5 = _a.sent();
+                throw error_5;
             case 4: return [3 /*break*/, 9];
             case 5:
                 requestUrl = endpoint + "/" + optionId + "?api_key=" + api.key;
@@ -315,9 +343,8 @@ var getOptionDetailsFromApi = function (type, endpoint, optionId) { return __awa
                 optionDetails = response.data;
                 return [2 /*return*/, optionDetails];
             case 8:
-                error_4 = _a.sent();
-                console.log(error_4);
-                return [3 /*break*/, 9];
+                error_6 = _a.sent();
+                throw error_6;
             case 9: return [2 /*return*/];
         }
     });
@@ -338,8 +365,7 @@ var getBackdropFromInternalStorage = function (inputArr, type, id) {
         .slice(0, 1000);
     var randomMovie = movies[Math.floor(Math.random() * movies.length)];
     console.log(randomMovie);
-    var randomMovieBackdrop = randomMovie.backdrop_path;
-    return randomMovieBackdrop;
+    return randomMovie ? randomMovie.backdrop_path : undefined;
 };
 var questionFormatter = function (candidate) {
     var question = {

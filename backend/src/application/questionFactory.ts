@@ -71,13 +71,34 @@ export const questionFactory = async (
 
   if (chosenCandidate) {
     // Query data from DB or API if question needs it
-    const questionDetails = doesQuestionNeedDetails(chosenCandidate[0])
-      ? await getQuestionDetails(
+    let questionDetails;
+    if (doesQuestionNeedDetails(chosenCandidate[0])) {
+      try {
+        questionDetails = await getQuestionDetails(
           movieStorage,
           chosenCandidate[0] as QuestionNeedsDetails,
           chosenCandidate[2]
-        )
-      : createOptionNames(chosenCandidate[2]);
+        );
+      } catch (error) {
+        if (error instanceof Error) {
+          session.banQuestionOption(chosenCandidate[0], error.message);
+          console.log("WILL RERUN BECAUSE OF MISSING: " + error.message);
+          return questionFactory(defaultOptions, movieStorage, session);
+        } else {
+          console.log("Can't rerun question factory!");
+          console.log(error);
+        }
+      }
+    } else {
+      questionDetails = createOptionNames(chosenCandidate[2]);
+    }
+
+    if (!questionDetails) {
+      session.banQuestionOption(chosenCandidate[0], chosenCandidate[2][0]);
+      session.banQuestionOption(chosenCandidate[0], chosenCandidate[2][1]);
+      console.log("WILL RERUN BECAUSE OF MISSING DETAILS");
+      return questionFactory(defaultOptions, movieStorage, session);
+    }
 
     const questionDetailsWithImages = questionDetails.map((option) => {
       if (
@@ -218,11 +239,15 @@ const getQuestionDetails = async (
   options: [string, string]
 ): Promise<[Option, Option]> => {
   console.log("NEED TO GET DETAILS");
-  const optionPromises = options.map(
-    async (id) => await getOptionDetailsWithFallback(movieStorage, type, id)
-  );
-  const detailedOptions = await Promise.all(optionPromises);
-  return detailedOptions as [Option, Option];
+  try {
+    const optionPromises = options.map(
+      async (id) => await getOptionDetailsWithFallback(movieStorage, type, id)
+    );
+    const detailedOptions = await Promise.all(optionPromises);
+    return detailedOptions as [Option, Option];
+  } catch (error) {
+    throw error;
+  }
 };
 
 // Wraps fallback mechanism querying API after in-mem storage if needed
@@ -273,6 +298,7 @@ const getOptionDetailsWithFallback = async (
       }
     } catch (error) {
       console.log(error);
+      throw Error(id);
     }
   }
 };
@@ -309,7 +335,7 @@ const getOptionDetailsFromApi = async (
       ).find(({ id }) => id.toString() === optionId);
       if (optionDetails) return optionDetails;
     } catch (error) {
-      console.log(error);
+      throw error;
     }
   } else {
     const requestUrl = `${endpoint}/${optionId}?api_key=${api.key}`;
@@ -318,7 +344,7 @@ const getOptionDetailsFromApi = async (
       const optionDetails = response.data as Details;
       return optionDetails;
     } catch (error) {
-      console.log(error);
+      throw error;
     }
   }
   // if (optionDetails && Object.keys(optionDetails).length > 0) {
@@ -341,7 +367,7 @@ const getBackdropFromInternalStorage = (
   inputArr: readonly Movie[],
   type: QuestionType,
   id: string
-): string => {
+): string | undefined => {
   console.log(`GETTING BACKDROP FOR ${id} OF ${type}`);
   const movies = inputArr
     .filter(isPropertyWithImages(questionTypeToMovieProperty[type], id))
@@ -349,8 +375,7 @@ const getBackdropFromInternalStorage = (
     .slice(0, 1000);
   const randomMovie = movies[Math.floor(Math.random() * movies.length)];
   console.log(randomMovie);
-  const randomMovieBackdrop = randomMovie.backdrop_path;
-  return randomMovieBackdrop;
+  return randomMovie ? randomMovie.backdrop_path : undefined;
 };
 
 const questionFormatter = (
