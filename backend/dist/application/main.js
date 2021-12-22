@@ -153,7 +153,7 @@ var questionPostHandler = function (requestData) { return __awaiter(void 0, void
 }); };
 exports.questionPostHandler = questionPostHandler;
 var similarMovieHandler = function (requestData) { return __awaiter(void 0, void 0, void 0, function () {
-    var session, sessionResultId, recommendations, _i, recommendations_1, id, movieResult;
+    var session, sessionResultId, recommendations, i, randomRecommendationId, movieResult;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -170,12 +170,22 @@ var similarMovieHandler = function (requestData) { return __awaiter(void 0, void
                 recommendations = _a.sent();
                 console.log("NUMBER OF RECOMMENDATIONS: " + recommendations.length);
                 console.log(recommendations.slice(0, 10));
-                for (_i = 0, recommendations_1 = recommendations; _i < recommendations_1.length; _i++) {
-                    id = recommendations_1[_i];
-                    movieResult = prepareMovieResult(recommendations[Math.floor(Math.random() * recommendations.length)]);
-                    if (movieResult) {
-                        session.finishSession(id);
-                        return [2 /*return*/, { sessionId: session.id, result: movieResult }];
+                for (i = 0; i < recommendations.length * 10; i++) {
+                    console.log(session.getPreviousResults());
+                    randomRecommendationId = recommendations[Math.floor(Math.random() * recommendations.length)];
+                    if (session.isInPreviousResults(randomRecommendationId)) {
+                        continue;
+                    }
+                    try {
+                        movieResult = prepareMovieResult(randomRecommendationId);
+                        if (movieResult) {
+                            session.finishSession(randomRecommendationId);
+                            return [2 /*return*/, { sessionId: session.id, result: movieResult }];
+                        }
+                    }
+                    catch (error) {
+                        console.log(error);
+                        continue;
                     }
                 }
                 throw new Error("No recommendations found");

@@ -117,13 +117,22 @@ export const similarMovieHandler = async (
   const recommendations = await getRecommendationsFromApi(sessionResultId);
   console.log("NUMBER OF RECOMMENDATIONS: " + recommendations.length);
   console.log(recommendations.slice(0, 10));
-  for (const id of recommendations) {
-    const movieResult = prepareMovieResult(
-      recommendations[Math.floor(Math.random() * recommendations.length)]
-    );
-    if (movieResult) {
-      session.finishSession(id);
-      return { sessionId: session.id, result: movieResult };
+  for (let i = 0; i < recommendations.length * 10; i++) {
+    console.log(session.getPreviousResults());
+    const randomRecommendationId =
+      recommendations[Math.floor(Math.random() * recommendations.length)];
+    if (session.isInPreviousResults(randomRecommendationId)) {
+      continue;
+    }
+    try {
+      const movieResult = prepareMovieResult(randomRecommendationId);
+      if (movieResult) {
+        session.finishSession(randomRecommendationId);
+        return { sessionId: session.id, result: movieResult };
+      }
+    } catch (error) {
+      console.log(error);
+      continue;
     }
   }
   throw new Error("No recommendations found");

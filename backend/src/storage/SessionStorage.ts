@@ -1,6 +1,6 @@
 // Class with implementation of in-mem storage for all temporary session data
 import { Movie } from "../domain/types/types";
-import { QuestionType } from "../application/types/types";
+import { MoviePredicate, QuestionType } from "../application/types/types";
 import { BannedQuestionOptions } from "./types";
 
 export class Session {
@@ -12,6 +12,9 @@ export class Session {
   private tempoBannedQuestionTypes: Set<QuestionType>;
   private permaBannedQuestionTypes: Set<QuestionType>;
   private permaBannedQuestionOptions: BannedQuestionOptions;
+  // private state: MoviePredicate[];
+  private previousResults: number[];
+
   constructor(id: number) {
     this._id = id;
     this.finished = false;
@@ -21,6 +24,8 @@ export class Session {
     this.tempoBannedQuestionTypes = new Set();
     this.permaBannedQuestionTypes = new Set();
     this.permaBannedQuestionOptions = {};
+    // this.state = [];
+    this.previousResults = [];
   }
 
   // Methods for movie storage
@@ -108,11 +113,20 @@ export class Session {
     } else return this.permaBannedQuestionOptions[type]!.has(option);
   };
 
+  // // Methods for working with state
+  // getState = (step?: number) => this.state.slice(0, step);
+
+  // appendToState = (predicate: MoviePredicate) => this.state.push(predicate);
+
+  // revertState = (numberOfSteps: number) =>
+  //   (this.state = this.state.slice(0, -numberOfSteps));
+
   // Methods for closing the session
   isFinished = () => this.finished;
 
   finishSession = (result: number): boolean => {
     this.result = result;
+    this.previousResults.push(result);
     this.finished = true;
     return !!this.result;
   };
@@ -127,6 +141,12 @@ export class Session {
   private set result(result: number | null) {
     this._result = result;
   }
+
+  // Methods for results history
+  isInPreviousResults = (result: number): boolean =>
+    this.previousResults.includes(result);
+
+  getPreviousResults = (): number[] => this.previousResults;
 }
 
 export default class SessionStorage {

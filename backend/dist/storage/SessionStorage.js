@@ -85,13 +85,24 @@ var Session = /** @class */ (function () {
             else
                 return _this.permaBannedQuestionOptions[type].has(option);
         };
+        // // Methods for working with state
+        // getState = (step?: number) => this.state.slice(0, step);
+        // appendToState = (predicate: MoviePredicate) => this.state.push(predicate);
+        // revertState = (numberOfSteps: number) =>
+        //   (this.state = this.state.slice(0, -numberOfSteps));
         // Methods for closing the session
         this.isFinished = function () { return _this.finished; };
         this.finishSession = function (result) {
             _this.result = result;
+            _this.previousResults.push(result);
             _this.finished = true;
             return !!_this.result;
         };
+        // Methods for results history
+        this.isInPreviousResults = function (result) {
+            return _this.previousResults.includes(result);
+        };
+        this.getPreviousResults = function () { return _this.previousResults; };
         this._id = id;
         this.finished = false;
         this._result = null;
@@ -99,6 +110,8 @@ var Session = /** @class */ (function () {
         this.tempoBannedQuestionTypes = new Set();
         this.permaBannedQuestionTypes = new Set();
         this.permaBannedQuestionOptions = {};
+        // this.state = [];
+        this.previousResults = [];
     }
     Object.defineProperty(Session.prototype, "id", {
         get: function () {
