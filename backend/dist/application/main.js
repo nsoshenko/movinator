@@ -168,9 +168,11 @@ var similarMovieHandler = function (requestData) { return __awaiter(void 0, void
                 return [4 /*yield*/, getRecommendationsFromApi(sessionResultId)];
             case 1:
                 recommendations = _a.sent();
+                console.log("NUMBER OF RECOMMENDATIONS: " + recommendations.length);
+                console.log(recommendations.slice(0, 10));
                 for (_i = 0, recommendations_1 = recommendations; _i < recommendations_1.length; _i++) {
                     id = recommendations_1[_i];
-                    movieResult = prepareMovieResult(Math.floor(Math.random() * recommendations.length));
+                    movieResult = prepareMovieResult(recommendations[Math.floor(Math.random() * recommendations.length)]);
                     if (movieResult) {
                         session.finishSession(id);
                         return [2 /*return*/, { sessionId: session.id, result: movieResult }];
@@ -204,7 +206,6 @@ var prepareMovieResult = function (id) {
             return final;
         }, [])
             .slice(0, 10);
-        // Find a way to implement movie director search
         var resultMovieDetailsWithCast = __assign(__assign({}, resultMovieDetails), { cast: resultMovieCast });
         return resultMovieDetailsWithCast;
     }

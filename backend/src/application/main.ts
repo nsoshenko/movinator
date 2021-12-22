@@ -115,9 +115,11 @@ export const similarMovieHandler = async (
     throw new Error("Session is finished, but no result found");
   const sessionResultId = session.result;
   const recommendations = await getRecommendationsFromApi(sessionResultId);
+  console.log("NUMBER OF RECOMMENDATIONS: " + recommendations.length);
+  console.log(recommendations.slice(0, 10));
   for (const id of recommendations) {
     const movieResult = prepareMovieResult(
-      Math.floor(Math.random() * recommendations.length)
+      recommendations[Math.floor(Math.random() * recommendations.length)]
     );
     if (movieResult) {
       session.finishSession(id);
@@ -156,7 +158,6 @@ const prepareMovieResult = (id: number): MovieResult => {
         return final;
       }, [])
       .slice(0, 10);
-    // Find a way to implement movie director search
     const resultMovieDetailsWithCast = {
       ...resultMovieDetails,
       cast: resultMovieCast,
