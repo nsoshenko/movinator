@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.isGenreDetails = exports.isPersonDetails = void 0;
+// Derive movie props of array type for movie filtering logic
+var ARRAY_MOVIE_PROPS = ["cast", "crew", "genre_ids", "keyword_ids"];
 var isPersonDetails = function (details) {
     return details.profile_path !== undefined;
 };

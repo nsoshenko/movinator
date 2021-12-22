@@ -1,4 +1,4 @@
-import { MovieResult } from "../../domain/types/types";
+import { Movie, MovieResult } from "../../domain/types/types";
 import { ValuesAndWeights } from "../../utils/utils";
 
 // Backend application types
@@ -55,6 +55,9 @@ export type QuestionCandidateWithDetails = readonly [
   number,
   [Option, Option]
 ];
+
+// Predicate type used for movie filtering
+export type MoviePredicate = (movie: Movie) => boolean;
 
 // Types for Options transformations
 
