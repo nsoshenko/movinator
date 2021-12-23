@@ -2,6 +2,7 @@ import axios from "axios";
 import { FC, useCallback, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import Header from "../components/Header";
+import ModalWithButtons from "../components/ModalWithButtons";
 import { MovieDetails, QuestionResponse, ResultResponse } from "../types/types";
 import { movinatorApiUrl } from "../utils/api";
 import { getCookieWithExpirationCheck } from "../utils/cookies";
@@ -11,45 +12,63 @@ const Result: FC = () => {
   const history = useHistory();
 
   const [result, setResult] = useState<MovieDetails>();
+  const [showSuggestionModal, setShowSuggestionModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
 
   const fetchResult = useCallback(
     async (sessionId: string) => {
-      const response = await axios.post(movinatorApiUrl + "/question", {
-        sessionId: sessionId,
-      });
-      const responseData = response.data as unknown as ResultResponse;
-      if ((responseData as unknown as QuestionResponse).question)
-        history.push("/question");
-      setResult(responseData.result);
+      try {
+        const response = await axios.post(movinatorApiUrl + "/question", {
+          sessionId: sessionId,
+        });
+        const responseData = response.data as unknown as ResultResponse;
+        if ((responseData as unknown as QuestionResponse).question)
+          history.push("/question");
+        setResult(responseData.result);
+      } catch (err) {
+        console.log(err);
+        setShowErrorModal(true);
+      }
     },
     [history]
   );
 
   // Refactor it for DRY, please
   const fetchSimilarMovie = useCallback(async (sessionId: string) => {
-    const response = await axios.post(movinatorApiUrl + "/similar", {
-      sessionId: sessionId,
-    });
-    const responseData = response.data as unknown as ResultResponse;
-    setResult(responseData.result);
+    try {
+      const response = await axios.post(movinatorApiUrl + "/similar", {
+        sessionId: sessionId,
+      });
+      const responseData = response.data as unknown as ResultResponse;
+      setResult(responseData.result);
+    } catch {
+      setShowSuggestionModal(true);
+    }
   }, []);
 
-  const handleClick = (): void => {
+  const handleSimilarMoviesClick = (): void => {
     const sessionId = getCookieWithExpirationCheck("sessionId");
     if (sessionId) fetchSimilarMovie(sessionId);
     else history.push("/");
   };
 
+  const yesOnClickHandler = (): void => {
+    localStorage.removeItem("sessionId");
+    history.push("/question");
+  };
+
+  const noOnClickHandler = (): void => setShowSuggestionModal(false);
+
   const choosePlaceholderPicture = (): string =>
     `/placeholders/movies_00${Math.ceil(Math.random() * 4)}.jpg`;
 
   const calculateTitleFontSize = (title: string): string => {
-    const screenOrientation = window.matchMedia("(orientation: landscape)");
-    const measureUnits = screenOrientation.matches ? "vw" : "vh";
+    // const screenOrientation = window.matchMedia("(orientation: landscape)");
+    // const measureUnits = screenOrientation.matches ? "vw" : "vh";
 
-    if (title.length <= 10) return 7.5 + measureUnits;
-    if (title.length <= 30) return 3.5 + measureUnits;
-    return 2 + measureUnits;
+    if (title.length <= 10) return 7.5 + "vmax";
+    if (title.length <= 30) return 3.5 + "vmax";
+    return 2 + "vmax";
   };
 
   useEffect(() => {
@@ -60,6 +79,38 @@ const Result: FC = () => {
 
   return (
     <>
+      {showSuggestionModal && (
+        <ModalWithButtons
+          modalText={[
+            "No similar movies left",
+            "Would you like to start a new session?",
+          ]}
+          buttons={[
+            {
+              text: "Yes",
+              onClickHandler: yesOnClickHandler,
+            },
+            {
+              text: "No",
+              onClickHandler: noOnClickHandler,
+            },
+          ]}
+        />
+      )}
+      {showErrorModal && (
+        <ModalWithButtons
+          modalText={[
+            "Something went wrong",
+            "You will be redirected to the homepage",
+          ]}
+          buttons={[
+            {
+              text: "OK",
+              onClickHandler: () => history.push("/"),
+            },
+          ]}
+        />
+      )}
       {result && (
         <>
           <Header />
@@ -146,7 +197,10 @@ const Result: FC = () => {
                 </div>
                 <div className="button-container">
                   <div className="button-label">Similar movie</div>
-                  <button id="similar-button" onClick={handleClick}></button>
+                  <button
+                    id="similar-button"
+                    onClick={handleSimilarMoviesClick}
+                  ></button>
                 </div>
               </div>
             </div>
