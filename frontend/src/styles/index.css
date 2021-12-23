@@ -201,7 +201,7 @@ header {
   color: white;
 }
 
-.sessionModal .yesNoWrapper {
+.sessionModal .buttonsWrapper {
   flex-basis: 14%;
   margin-top: 21.4%;
 
@@ -217,12 +217,12 @@ header {
   cursor: pointer;
 }
 
-#yesButtonSessionModal {
+#YesButtonSessionModal {
   background-color: white;
   color: black;
 }
 
-#noButtonSessionModal {
+#NoButtonSessionModal {
   background-color: #db202c;
   color: white;
 }

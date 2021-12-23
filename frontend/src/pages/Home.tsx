@@ -3,7 +3,7 @@ import { FC, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { isIOS } from "react-device-detect";
 import InstallationHint from "../components/InstallationHint";
-import SessionModal from "../components/SessionModal";
+import ModalWithButtons from "../components/ModalWithButtons";
 import { SessionStageResponse } from "../types/types";
 import { movinatorApiUrl } from "../utils/api";
 import { getCookieWithExpirationCheck } from "../utils/cookies";
@@ -83,9 +83,18 @@ const Home: FC = () => {
   return (
     <>
       {showSessionModal && (
-        <SessionModal
-          yesOnClickHandler={yesOnClickHandler}
-          noOnClickHandler={noOnClickHandler}
+        <ModalWithButtons
+          modalText="Want to continue your last session?"
+          buttons={[
+            {
+              text: "Yes",
+              onClickHandler: yesOnClickHandler,
+            },
+            {
+              text: "No",
+              onClickHandler: noOnClickHandler,
+            },
+          ]}
         />
       )}
       {showInstallationHint && (
