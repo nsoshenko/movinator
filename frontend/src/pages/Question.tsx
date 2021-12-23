@@ -3,6 +3,7 @@ import { FC, useCallback, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import Divider from "../components/Divider";
 import Header from "../components/Header";
+import ModalWithButtons from "../components/ModalWithButtons";
 import OptionBox from "../components/OptionBox";
 import {
   isResultResponse,
@@ -23,6 +24,7 @@ const Question: FC = () => {
   const [questionData, setQuestionData] = useState<QuestionResponse>();
   const [optionNames, setOptionNames] = useState<string[]>();
   const [optionPictures, setOptionPictures] = useState<string[]>(["", ""]);
+  const [showErrorModal, setShowErrorModal] = useState(false);
 
   const fetchQuestion = useCallback(
     async (sessionId?: string, answerData?: QuestionResponse) => {
@@ -49,21 +51,26 @@ const Question: FC = () => {
         );
       };
 
-      if (!sessionId) {
-        const response = await axios.get(apiUrl);
-        const responseData = response.data as QuestionResponse;
-        processQuestionResponse(responseData);
-      } else {
-        console.log(answerData);
-        const response = await axios.post(apiUrl, {
-          sessionId: sessionId,
-          question: answerData?.question,
-        });
-        const responseData = response.data as unknown as
-          | QuestionResponse
-          | ResultResponse;
-        if (isResultResponse(responseData)) history.push("result");
-        else processQuestionResponse(responseData);
+      try {
+        if (!sessionId) {
+          const response = await axios.get(apiUrl);
+          const responseData = response.data as QuestionResponse;
+          processQuestionResponse(responseData);
+        } else {
+          console.log(answerData);
+          const response = await axios.post(apiUrl, {
+            sessionId: sessionId,
+            question: answerData?.question,
+          });
+          const responseData = response.data as unknown as
+            | QuestionResponse
+            | ResultResponse;
+          if (isResultResponse(responseData)) history.push("result");
+          else processQuestionResponse(responseData);
+        }
+      } catch (err) {
+        console.log(err);
+        setShowErrorModal(true);
       }
     },
     [history, apiUrl]
@@ -91,6 +98,20 @@ const Question: FC = () => {
 
   return (
     <>
+      {showErrorModal && (
+        <ModalWithButtons
+          modalText={[
+            "Something went wrong",
+            "You will be redirected to the homepage",
+          ]}
+          buttons={[
+            {
+              text: "OK",
+              onClickHandler: () => history.push("/"),
+            },
+          ]}
+        />
+      )}
       <Header />
       <div className="container after-header">
         {optionNames && optionNames.length === 3 ? (
