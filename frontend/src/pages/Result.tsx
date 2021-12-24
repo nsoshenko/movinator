@@ -5,7 +5,10 @@ import Header from "../components/Header";
 import ModalWithButtons from "../components/ModalWithButtons";
 import { MovieDetails, QuestionResponse, ResultResponse } from "../types/types";
 import { movinatorApiUrl } from "../utils/api";
-import { getCookieWithExpirationCheck } from "../utils/cookies";
+import {
+  getCookieWithExpirationCheck,
+  setCookieWithExpiration,
+} from "../utils/cookies";
 
 const Result: FC = () => {
   const imageUrl = "https://image.tmdb.org/t/p/w1280";
@@ -22,6 +25,11 @@ const Result: FC = () => {
           sessionId: sessionId,
         });
         const responseData = response.data as unknown as ResultResponse;
+        setCookieWithExpiration(
+          "sessionId",
+          responseData.sessionId,
+          1000 * 60 * 10
+        );
         if ((responseData as unknown as QuestionResponse).question)
           history.push("/question");
         setResult(responseData.result);
@@ -40,6 +48,11 @@ const Result: FC = () => {
         sessionId: sessionId,
       });
       const responseData = response.data as unknown as ResultResponse;
+      setCookieWithExpiration(
+        "sessionId",
+        responseData.sessionId,
+        1000 * 60 * 10
+      );
       setResult(responseData.result);
     } catch {
       setShowSuggestionModal(true);
