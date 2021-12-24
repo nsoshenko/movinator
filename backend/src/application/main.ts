@@ -114,16 +114,21 @@ export const similarMovieHandler = async (
   if (!session.result)
     throw new Error("Session is finished, but no result found");
   const sessionResultId = session.result;
-  const recommendations = await getRecommendationsFromApi(sessionResultId);
-  console.log("NUMBER OF RECOMMENDATIONS: " + recommendations.length);
-  console.log(recommendations.slice(0, 10));
-  for (let i = 0; i < recommendations.length * 10; i++) {
-    console.log(session.getPreviousResults());
+  const recommendations = session.hasSimilarResults()
+    ? session.getSimilarResults()
+    : session.setSimilarResults(
+        await getRecommendationsFromApi(sessionResultId)
+      );
+  const filteredRecommendations = recommendations.filter(
+    session.isNotInPreviousResults
+  );
+  console.log("NUMBER OF RECOMMENDATIONS: " + filteredRecommendations.length);
+  console.log(filteredRecommendations.slice(0, 10));
+  for (let i = 0; i < filteredRecommendations.length; i++) {
     const randomRecommendationId =
-      recommendations[Math.floor(Math.random() * recommendations.length)];
-    if (session.isInPreviousResults(randomRecommendationId)) {
-      continue;
-    }
+      filteredRecommendations[
+        Math.floor(Math.random() * filteredRecommendations.length)
+      ];
     try {
       const movieResult = prepareMovieResult(randomRecommendationId);
       if (movieResult) {

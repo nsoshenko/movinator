@@ -13,6 +13,7 @@ export class Session {
   private permaBannedQuestionTypes: Set<QuestionType>;
   private permaBannedQuestionOptions: BannedQuestionOptions;
   // private state: MoviePredicate[];
+  private similarResults: number[];
   private previousResults: number[];
 
   constructor(id: number) {
@@ -25,6 +26,7 @@ export class Session {
     this.permaBannedQuestionTypes = new Set();
     this.permaBannedQuestionOptions = {};
     // this.state = [];
+    this.similarResults = [];
     this.previousResults = [];
   }
 
@@ -142,9 +144,20 @@ export class Session {
     this._result = result;
   }
 
+  // Methods for similar results
+  setSimilarResults = (similarMovies: number[]): number[] =>
+    (this.similarResults = [...similarMovies]);
+
+  hasSimilarResults = (): boolean => this.similarResults.length > 0;
+
+  getSimilarResults = (): number[] => this.similarResults;
+
   // Methods for results history
-  isInPreviousResults = (result: number): boolean =>
+  isInPreviousResults = (result: number) =>
     this.previousResults.includes(result);
+
+  isNotInPreviousResults = (result: number) =>
+    !this.isInPreviousResults(result);
 
   getPreviousResults = (): number[] => this.previousResults;
 }
