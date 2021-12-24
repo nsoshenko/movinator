@@ -62,7 +62,7 @@ const Result: FC = () => {
   const handleSimilarMoviesClick = (): void => {
     const sessionId = getCookieWithExpirationCheck("sessionId");
     if (sessionId) fetchSimilarMovie(sessionId);
-    else history.push("/");
+    else setShowErrorModal(true);
   };
 
   const yesOnClickHandler = (): void => {
