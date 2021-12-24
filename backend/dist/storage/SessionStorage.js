@@ -98,9 +98,18 @@ var Session = /** @class */ (function () {
             _this.finished = true;
             return !!_this.result;
         };
+        // Methods for similar results
+        this.setSimilarResults = function (similarMovies) {
+            return (_this.similarResults = __spreadArray([], similarMovies, true));
+        };
+        this.hasSimilarResults = function () { return _this.similarResults.length > 0; };
+        this.getSimilarResults = function () { return _this.similarResults; };
         // Methods for results history
         this.isInPreviousResults = function (result) {
             return _this.previousResults.includes(result);
+        };
+        this.isNotInPreviousResults = function (result) {
+            return !_this.isInPreviousResults(result);
         };
         this.getPreviousResults = function () { return _this.previousResults; };
         this._id = id;
@@ -111,6 +120,7 @@ var Session = /** @class */ (function () {
         this.permaBannedQuestionTypes = new Set();
         this.permaBannedQuestionOptions = {};
         // this.state = [];
+        this.similarResults = [];
         this.previousResults = [];
     }
     Object.defineProperty(Session.prototype, "id", {

@@ -153,9 +153,9 @@ var questionPostHandler = function (requestData) { return __awaiter(void 0, void
 }); };
 exports.questionPostHandler = questionPostHandler;
 var similarMovieHandler = function (requestData) { return __awaiter(void 0, void 0, void 0, function () {
-    var session, sessionResultId, recommendations, i, randomRecommendationId, movieResult;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
+    var session, sessionResultId, recommendations, _a, _b, _c, filteredRecommendations, i, randomRecommendationId, movieResult;
+    return __generator(this, function (_d) {
+        switch (_d.label) {
             case 0:
                 session = allSessionsStorage.getSessionById(requestData.sessionId);
                 if (!session)
@@ -165,17 +165,22 @@ var similarMovieHandler = function (requestData) { return __awaiter(void 0, void
                 if (!session.result)
                     throw new Error("Session is finished, but no result found");
                 sessionResultId = session.result;
-                return [4 /*yield*/, getRecommendationsFromApi(sessionResultId)];
+                if (!session.hasSimilarResults()) return [3 /*break*/, 1];
+                _a = session.getSimilarResults();
+                return [3 /*break*/, 3];
             case 1:
-                recommendations = _a.sent();
-                console.log("NUMBER OF RECOMMENDATIONS: " + recommendations.length);
-                console.log(recommendations.slice(0, 10));
-                for (i = 0; i < recommendations.length * 10; i++) {
-                    console.log(session.getPreviousResults());
-                    randomRecommendationId = recommendations[Math.floor(Math.random() * recommendations.length)];
-                    if (session.isInPreviousResults(randomRecommendationId)) {
-                        continue;
-                    }
+                _c = (_b = session).setSimilarResults;
+                return [4 /*yield*/, getRecommendationsFromApi(sessionResultId)];
+            case 2:
+                _a = _c.apply(_b, [_d.sent()]);
+                _d.label = 3;
+            case 3:
+                recommendations = _a;
+                filteredRecommendations = recommendations.filter(session.isNotInPreviousResults);
+                console.log("NUMBER OF RECOMMENDATIONS: " + filteredRecommendations.length);
+                console.log(filteredRecommendations.slice(0, 10));
+                for (i = 0; i < filteredRecommendations.length; i++) {
+                    randomRecommendationId = filteredRecommendations[Math.floor(Math.random() * filteredRecommendations.length)];
                     try {
                         movieResult = prepareMovieResult(randomRecommendationId);
                         if (movieResult) {
