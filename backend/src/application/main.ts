@@ -1,4 +1,3 @@
-import { optionsCounter } from "./optionsCounter";
 import { READY_TO_FINISH_THRESHOLD } from "./types/constants";
 import MovieStorage from "../storage/Storage";
 import SessionStorage, { Session } from "../storage/SessionStorage";
@@ -12,31 +11,15 @@ import {
   SessionStageResponse,
 } from "./types/types";
 import { Movie, MovieResult } from "../domain/types/types";
-import { weightedRandomizer } from "../utils/utils";
+import { weightedRandomizer } from "../utils/randomizer";
 import { questionFactory } from "./questionFactory";
 import { answerProcessor } from "./answerProcessor";
 import TmdbApi from "./tmdbApi";
 
-// Initialize in-mem storage from JSON files on HDD
-const movieStorage: MovieStorage = new MovieStorage(
-  process.env.MOVIE_DB_PATH as string,
-  {
-    genres: process.env.GENRES_DB_PATH,
-    people: process.env.PEOPLE_DB_PATH,
-    production_companies: process.env.PRODUCTION_COMPANIES_DB_PATH,
-    keywords: process.env.KEYWORDS_DB_PATH,
-  }
-);
-
-const allSessionsStorage: SessionStorage = new SessionStorage();
-
-const api = new TmdbApi();
-
-var defaultOptions: Options = {}; // Needed not to do a full optionsCounter on each session start
-
 // Check session endpoint handler
 export const sessionCheckHandler = async (
-  sessionData: OnlyIdRequest
+  sessionData: OnlyIdRequest,
+  allSessionsStorage: SessionStorage
 ): Promise<SessionStageResponse> => {
   const sessionId = Number(sessionData.sessionId);
   const session = allSessionsStorage.getSessionById(sessionId);
@@ -45,9 +28,11 @@ export const sessionCheckHandler = async (
 };
 
 // Question endpoint handlers
-export const questionGetHandler = async (): Promise<
-  QuestionResponse | Error
-> => {
+export const questionGetHandler = async (
+  allSessionsStorage: SessionStorage,
+  defaultOptions: Options,
+  movieStorage: MovieStorage
+): Promise<QuestionResponse | Error> => {
   const sessionId = allSessionsStorage.createNewSession();
   const session = allSessionsStorage.getSessionById(sessionId);
   const question = await questionFactory(
@@ -62,7 +47,10 @@ export const questionGetHandler = async (): Promise<
 };
 
 export const questionPostHandler = async (
-  requestData: OnlyIdRequest | AnswerRequest
+  requestData: OnlyIdRequest | AnswerRequest,
+  allSessionsStorage: SessionStorage,
+  defaultOptions: Options,
+  movieStorage: MovieStorage
 ): Promise<QuestionResponse | ResultResponse | Error> => {
   const session = allSessionsStorage.getSessionById(
     Number(requestData.sessionId)
@@ -74,7 +62,10 @@ export const questionPostHandler = async (
   // Check if session already has stored result
   const sessionResult = session.result;
   if (sessionResult) {
-    const sessionResultDetails = prepareMovieResult(sessionResult);
+    const sessionResultDetails = prepareMovieResult(
+      sessionResult,
+      movieStorage
+    );
     if (sessionResultDetails) {
       return { sessionId: session.id, result: sessionResultDetails };
     } else
@@ -91,7 +82,10 @@ export const questionPostHandler = async (
     if (readyToFinish(session, READY_TO_FINISH_THRESHOLD)) {
       const resultMovie = pickResult(session.getMovies());
       if (resultMovie) {
-        const resultMovieDetails = prepareMovieResult(resultMovie.id);
+        const resultMovieDetails = prepareMovieResult(
+          resultMovie.id,
+          movieStorage
+        );
         if (resultMovieDetails) {
           session.finishSession(resultMovieDetails.id);
           return { sessionId: session.id, result: resultMovieDetails };
@@ -106,7 +100,9 @@ export const questionPostHandler = async (
 };
 
 export const similarMovieHandler = async (
-  requestData: OnlyIdRequest
+  requestData: OnlyIdRequest,
+  allSessionsStorage: SessionStorage,
+  movieStorage: MovieStorage
 ): Promise<ResultResponse | Error> => {
   const session = allSessionsStorage.getSessionById(requestData.sessionId);
   if (!session) throw new Error("No session found");
@@ -130,7 +126,10 @@ export const similarMovieHandler = async (
         Math.floor(Math.random() * filteredRecommendations.length)
       ];
     try {
-      const movieResult = prepareMovieResult(randomRecommendationId);
+      const movieResult = prepareMovieResult(
+        randomRecommendationId,
+        movieStorage
+      );
       if (movieResult) {
         session.finishSession(randomRecommendationId);
         return { sessionId: session.id, result: movieResult };
@@ -161,7 +160,10 @@ const pickResult = (arr: Movie[]): Movie | undefined => {
   return arr[randomMovieIndex];
 };
 
-const prepareMovieResult = (id: number): MovieResult => {
+const prepareMovieResult = (
+  id: number,
+  movieStorage: MovieStorage
+): MovieResult => {
   const resultMovieDetails = movieStorage.getFullMovieDetailsById(id);
   if (resultMovieDetails) {
     const resultMovieCast = resultMovieDetails.cast
@@ -180,13 +182,9 @@ const prepareMovieResult = (id: number): MovieResult => {
   } else throw Error(`No movie with ${id} was found`);
 };
 
-// Initialize default counter once the service is up not to do it for every session
-export const initializeDefaultCounters = async () => {
-  const options = await optionsCounter(movieStorage.getAllMovies());
-  defaultOptions = options;
-};
-
 const getRecommendationsFromApi = async (id: number): Promise<number[]> => {
+  const api = new TmdbApi();
+
   const response = await api.instance.get(
     `/movie/${id}/recommendations?api_key=${api.key}`
   );

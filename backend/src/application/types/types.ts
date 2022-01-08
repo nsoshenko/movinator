@@ -1,5 +1,5 @@
 import { Movie, MovieResult } from "../../domain/types/types";
-import { ValuesAndWeights } from "../../utils/utils";
+import { ValuesAndWeights } from "../../utils/randomizer";
 
 // Backend application types
 

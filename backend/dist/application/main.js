@@ -50,28 +50,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.initializeDefaultCounters = exports.similarMovieHandler = exports.questionPostHandler = exports.questionGetHandler = exports.sessionCheckHandler = void 0;
-var optionsCounter_1 = require("./optionsCounter");
+exports.similarMovieHandler = exports.questionPostHandler = exports.questionGetHandler = exports.sessionCheckHandler = void 0;
 var constants_1 = require("./types/constants");
-var Storage_1 = __importDefault(require("../storage/Storage"));
-var SessionStorage_1 = __importDefault(require("../storage/SessionStorage"));
 var types_1 = require("./types/types");
-var utils_1 = require("../utils/utils");
+var randomizer_1 = require("../utils/randomizer");
 var questionFactory_1 = require("./questionFactory");
 var answerProcessor_1 = require("./answerProcessor");
 var tmdbApi_1 = __importDefault(require("./tmdbApi"));
-// Initialize in-mem storage from JSON files on HDD
-var movieStorage = new Storage_1.default(process.env.MOVIE_DB_PATH, {
-    genres: process.env.GENRES_DB_PATH,
-    people: process.env.PEOPLE_DB_PATH,
-    production_companies: process.env.PRODUCTION_COMPANIES_DB_PATH,
-    keywords: process.env.KEYWORDS_DB_PATH,
-});
-var allSessionsStorage = new SessionStorage_1.default();
-var api = new tmdbApi_1.default();
-var defaultOptions = {}; // Needed not to do a full optionsCounter on each session start
 // Check session endpoint handler
-var sessionCheckHandler = function (sessionData) { return __awaiter(void 0, void 0, void 0, function () {
+var sessionCheckHandler = function (sessionData, allSessionsStorage) { return __awaiter(void 0, void 0, void 0, function () {
     var sessionId, session;
     return __generator(this, function (_a) {
         sessionId = Number(sessionData.sessionId);
@@ -85,7 +72,7 @@ var sessionCheckHandler = function (sessionData) { return __awaiter(void 0, void
 }); };
 exports.sessionCheckHandler = sessionCheckHandler;
 // Question endpoint handlers
-var questionGetHandler = function () { return __awaiter(void 0, void 0, void 0, function () {
+var questionGetHandler = function (allSessionsStorage, defaultOptions, movieStorage) { return __awaiter(void 0, void 0, void 0, function () {
     var sessionId, session, question;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -106,7 +93,7 @@ var questionGetHandler = function () { return __awaiter(void 0, void 0, void 0, 
     });
 }); };
 exports.questionGetHandler = questionGetHandler;
-var questionPostHandler = function (requestData) { return __awaiter(void 0, void 0, void 0, function () {
+var questionPostHandler = function (requestData, allSessionsStorage, defaultOptions, movieStorage) { return __awaiter(void 0, void 0, void 0, function () {
     var session, sessionResult, sessionResultDetails, possibleForcedQuestionType, resultMovie, resultMovieDetails, question;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -117,7 +104,7 @@ var questionPostHandler = function (requestData) { return __awaiter(void 0, void
                 }
                 sessionResult = session.result;
                 if (sessionResult) {
-                    sessionResultDetails = prepareMovieResult(sessionResult);
+                    sessionResultDetails = prepareMovieResult(sessionResult, movieStorage);
                     if (sessionResultDetails) {
                         return [2 /*return*/, { sessionId: session.id, result: sessionResultDetails }];
                     }
@@ -130,7 +117,7 @@ var questionPostHandler = function (requestData) { return __awaiter(void 0, void
                     if (readyToFinish(session, constants_1.READY_TO_FINISH_THRESHOLD)) {
                         resultMovie = pickResult(session.getMovies());
                         if (resultMovie) {
-                            resultMovieDetails = prepareMovieResult(resultMovie.id);
+                            resultMovieDetails = prepareMovieResult(resultMovie.id, movieStorage);
                             if (resultMovieDetails) {
                                 session.finishSession(resultMovieDetails.id);
                                 return [2 /*return*/, { sessionId: session.id, result: resultMovieDetails }];
@@ -152,7 +139,7 @@ var questionPostHandler = function (requestData) { return __awaiter(void 0, void
     });
 }); };
 exports.questionPostHandler = questionPostHandler;
-var similarMovieHandler = function (requestData) { return __awaiter(void 0, void 0, void 0, function () {
+var similarMovieHandler = function (requestData, allSessionsStorage, movieStorage) { return __awaiter(void 0, void 0, void 0, function () {
     var session, sessionResultId, recommendations, _a, _b, _c, filteredRecommendations, i, randomRecommendationId, movieResult;
     return __generator(this, function (_d) {
         switch (_d.label) {
@@ -182,7 +169,7 @@ var similarMovieHandler = function (requestData) { return __awaiter(void 0, void
                 for (i = 0; i < filteredRecommendations.length; i++) {
                     randomRecommendationId = filteredRecommendations[Math.floor(Math.random() * filteredRecommendations.length)];
                     try {
-                        movieResult = prepareMovieResult(randomRecommendationId);
+                        movieResult = prepareMovieResult(randomRecommendationId, movieStorage);
                         if (movieResult) {
                             session.finishSession(randomRecommendationId);
                             return [2 /*return*/, { sessionId: session.id, result: movieResult }];
@@ -206,10 +193,10 @@ var pickResult = function (arr) {
         final[index] = Math.floor((current.popularity + 1) * (current.vote_count + 1));
         return final;
     }, {});
-    var randomMovieIndex = Number((0, utils_1.weightedRandomizer)(moviesToRandomize));
+    var randomMovieIndex = Number((0, randomizer_1.weightedRandomizer)(moviesToRandomize));
     return arr[randomMovieIndex];
 };
-var prepareMovieResult = function (id) {
+var prepareMovieResult = function (id, movieStorage) {
     var resultMovieDetails = movieStorage.getFullMovieDetailsById(id);
     if (resultMovieDetails) {
         var resultMovieCast = resultMovieDetails.cast
@@ -227,25 +214,13 @@ var prepareMovieResult = function (id) {
     else
         throw Error("No movie with " + id + " was found");
 };
-// Initialize default counter once the service is up not to do it for every session
-var initializeDefaultCounters = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var options;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, (0, optionsCounter_1.optionsCounter)(movieStorage.getAllMovies())];
-            case 1:
-                options = _a.sent();
-                defaultOptions = options;
-                return [2 /*return*/];
-        }
-    });
-}); };
-exports.initializeDefaultCounters = initializeDefaultCounters;
 var getRecommendationsFromApi = function (id) { return __awaiter(void 0, void 0, void 0, function () {
-    var response, recommendations;
+    var api, response, recommendations;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, api.instance.get("/movie/" + id + "/recommendations?api_key=" + api.key)];
+            case 0:
+                api = new tmdbApi_1.default();
+                return [4 /*yield*/, api.instance.get("/movie/" + id + "/recommendations?api_key=" + api.key)];
             case 1:
                 response = _a.sent();
                 recommendations = response.data.results;

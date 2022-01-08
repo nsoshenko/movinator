@@ -1,5 +1,5 @@
 import { Session } from "../storage/SessionStorage";
-import { weightedRandomizer, ValuesAndWeights } from "../utils/utils";
+import { weightedRandomizer, ValuesAndWeights } from "../utils/randomizer";
 import { optionsCounter } from "./optionsCounter";
 import { QUESTION_TYPE_COUNT } from "./types/constants";
 import {

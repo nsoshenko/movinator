@@ -53,112 +53,137 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = __importDefault(require("express"));
 var cors_1 = __importDefault(require("cors"));
 var main_1 = require("./main");
+var dropbox_1 = require("../utils/dropbox");
+var optionsCounter_1 = require("./optionsCounter");
+var Storage_1 = __importDefault(require("../storage/Storage"));
+var SessionStorage_1 = __importDefault(require("../storage/SessionStorage"));
 var app = (0, express_1.default)();
 var port = 3002;
 // Body parsing middleware
 app.use(express_1.default.json());
 app.use((0, cors_1.default)());
-try {
-    app.listen(port, function () {
-        (0, main_1.initializeDefaultCounters)();
-        console.log("Server is running on port " + port);
-    });
-}
-catch (err) {
-    console.error("Error occured " + err.message);
-}
-app.get("/api/question", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var response, err_1;
+(function () { return __awaiter(void 0, void 0, void 0, function () {
+    var movieStorage, allSessionsStorage, defaultOptions;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0:
-                _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, (0, main_1.questionGetHandler)()];
+            case 0: return [4 /*yield*/, (0, dropbox_1.downloadStorage)().then(function () {
+                    return new Storage_1.default(process.env.MOVIE_DB_PATH, {
+                        genres: process.env.GENRES_DB_PATH,
+                        people: process.env.PEOPLE_DB_PATH,
+                        production_companies: process.env.PRODUCTION_COMPANIES_DB_PATH,
+                        keywords: process.env.KEYWORDS_DB_PATH,
+                    });
+                })];
             case 1:
-                response = _a.sent();
-                console.log(response);
-                return [2 /*return*/, res.status(200).send(__assign({}, response))];
+                movieStorage = _a.sent();
+                allSessionsStorage = new SessionStorage_1.default();
+                return [4 /*yield*/, (0, optionsCounter_1.optionsCounter)(movieStorage.getAllMovies())];
             case 2:
-                err_1 = _a.sent();
-                console.error(err_1);
-                return [2 /*return*/, res.status(500).send("Something went wrong")];
-            case 3: return [2 /*return*/];
+                defaultOptions = _a.sent();
+                try {
+                    app.listen(port, function () {
+                        console.log("Server is running on port " + port);
+                    });
+                }
+                catch (err) {
+                    console.error("Error occured " + err.message);
+                }
+                app.get("/api/question", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+                    var response, err_1;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                _a.trys.push([0, 2, , 3]);
+                                return [4 /*yield*/, (0, main_1.questionGetHandler)(allSessionsStorage, defaultOptions, movieStorage)];
+                            case 1:
+                                response = _a.sent();
+                                console.log(response);
+                                return [2 /*return*/, res.status(200).send(__assign({}, response))];
+                            case 2:
+                                err_1 = _a.sent();
+                                console.error(err_1);
+                                return [2 /*return*/, res.status(500).send("Something went wrong")];
+                            case 3: return [2 /*return*/];
+                        }
+                    });
+                }); });
+                app.post("/api/question", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+                    var bodyValidation, response, err_2;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                // Log request
+                                console.log(req.body.sessionId || "No session ID from React");
+                                console.log(req.body.question || "No answer data from React");
+                                bodyValidation = Object.keys(req.body);
+                                if (bodyValidation.length === 0)
+                                    return [2 /*return*/, res.status(500).send("Empty POST request")];
+                                if (!bodyValidation.includes("sessionId"))
+                                    return [2 /*return*/, res.status(500).send("No session ID in request")];
+                                if (Number(req.body.sessionId) <= 0)
+                                    return [2 /*return*/, res.status(500).send("Wrong session ID format")];
+                                _a.label = 1;
+                            case 1:
+                                _a.trys.push([1, 3, , 4]);
+                                return [4 /*yield*/, (0, main_1.questionPostHandler)(req.body, allSessionsStorage, defaultOptions, movieStorage)];
+                            case 2:
+                                response = _a.sent();
+                                console.log(response);
+                                return [2 /*return*/, res.status(200).send(__assign({}, response))];
+                            case 3:
+                                err_2 = _a.sent();
+                                console.error(err_2);
+                                return [2 /*return*/, res.status(404).send(err_2)];
+                            case 4: return [2 /*return*/];
+                        }
+                    });
+                }); });
+                app.post("/api/check", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+                    var response, err_3;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                console.log("Request to check existing session");
+                                _a.label = 1;
+                            case 1:
+                                _a.trys.push([1, 3, , 4]);
+                                return [4 /*yield*/, (0, main_1.sessionCheckHandler)(req.body, allSessionsStorage)];
+                            case 2:
+                                response = _a.sent();
+                                console.log(response);
+                                return [2 /*return*/, res.status(200).send(__assign({}, response))];
+                            case 3:
+                                err_3 = _a.sent();
+                                console.log(err_3);
+                                return [2 /*return*/, res.status(404).send(err_3)];
+                            case 4: return [2 /*return*/];
+                        }
+                    });
+                }); });
+                app.post("/api/similar", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+                    var response, err_4;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                console.log("Request for similar movie");
+                                _a.label = 1;
+                            case 1:
+                                _a.trys.push([1, 3, , 4]);
+                                return [4 /*yield*/, (0, main_1.similarMovieHandler)(req.body, allSessionsStorage, movieStorage)];
+                            case 2:
+                                response = _a.sent();
+                                console.log(response);
+                                return [2 /*return*/, res.status(200).send(__assign({}, response))];
+                            case 3:
+                                err_4 = _a.sent();
+                                console.log(err_4);
+                                return [2 /*return*/, res.status(404).send(err_4)];
+                            case 4: return [2 /*return*/];
+                        }
+                    });
+                }); });
+                return [2 /*return*/];
         }
     });
-}); });
-app.post("/api/question", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var bodyValidation, response, err_2;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                // Log request
-                console.log(req.body.sessionId || "No session ID from React");
-                console.log(req.body.question || "No answer data from React");
-                bodyValidation = Object.keys(req.body);
-                if (bodyValidation.length === 0)
-                    return [2 /*return*/, res.status(500).send("Empty POST request")];
-                if (!bodyValidation.includes("sessionId"))
-                    return [2 /*return*/, res.status(500).send("No session ID in request")];
-                if (Number(req.body.sessionId) <= 0)
-                    return [2 /*return*/, res.status(500).send("Wrong session ID format")];
-                _a.label = 1;
-            case 1:
-                _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, (0, main_1.questionPostHandler)(req.body)];
-            case 2:
-                response = _a.sent();
-                console.log(response);
-                return [2 /*return*/, res.status(200).send(__assign({}, response))];
-            case 3:
-                err_2 = _a.sent();
-                console.error(err_2);
-                return [2 /*return*/, res.status(404).send(err_2)];
-            case 4: return [2 /*return*/];
-        }
-    });
-}); });
-app.post("/api/check", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var response, err_3;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                console.log("Request to check existing session");
-                _a.label = 1;
-            case 1:
-                _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, (0, main_1.sessionCheckHandler)(req.body)];
-            case 2:
-                response = _a.sent();
-                console.log(response);
-                return [2 /*return*/, res.status(200).send(__assign({}, response))];
-            case 3:
-                err_3 = _a.sent();
-                console.log(err_3);
-                return [2 /*return*/, res.status(404).send(err_3)];
-            case 4: return [2 /*return*/];
-        }
-    });
-}); });
-app.post("/api/similar", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var response, err_4;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                console.log("Request for similar movie");
-                _a.label = 1;
-            case 1:
-                _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, (0, main_1.similarMovieHandler)(req.body)];
-            case 2:
-                response = _a.sent();
-                console.log(response);
-                return [2 /*return*/, res.status(200).send(__assign({}, response))];
-            case 3:
-                err_4 = _a.sent();
-                console.log(err_4);
-                return [2 /*return*/, res.status(404).send(err_4)];
-            case 4: return [2 /*return*/];
-        }
-    });
-}); });
+}); })();
 //# sourceMappingURL=app.js.map

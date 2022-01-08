@@ -40,7 +40,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.questionFactory = void 0;
-var utils_1 = require("../utils/utils");
+var randomizer_1 = require("../utils/randomizer");
 var optionsCounter_1 = require("./optionsCounter");
 var constants_1 = require("./types/constants");
 var types_1 = require("./types/types");
@@ -183,9 +183,9 @@ var chooseBestCandidatePerQuestionType = function (options) {
             chosenOptions.push.apply(chosenOptions, [optionValuesKeys[0], optionValuesKeys[1]]);
         }
         else if (optionValuesKeys.length > 2) {
-            var randomOptionOne = (0, utils_1.weightedRandomizer)(optionValues);
+            var randomOptionOne = (0, randomizer_1.weightedRandomizer)(optionValues);
             do {
-                var randomOptionTwo = (0, utils_1.weightedRandomizer)(optionValues);
+                var randomOptionTwo = (0, randomizer_1.weightedRandomizer)(optionValues);
             } while (randomOptionOne === randomOptionTwo);
             chosenOptions.push.apply(chosenOptions, [randomOptionOne, randomOptionTwo]);
         }
@@ -210,7 +210,7 @@ var chooseQuestionType = function (candidates) {
         var candidate = candidates_1[_i];
         optionsToRandomize[candidate[0]] = candidate[1];
     }
-    var randomOption = (0, utils_1.weightedRandomizer)(optionsToRandomize);
+    var randomOption = (0, randomizer_1.weightedRandomizer)(optionsToRandomize);
     var chosenOption = candidates.find(function (candidate) { return candidate[0] === randomOption; });
     console.log("Randomly chosen option: " + chosenOption);
     return chosenOption;
