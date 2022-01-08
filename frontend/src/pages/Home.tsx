@@ -105,8 +105,9 @@ const Home: FC = () => {
       <div
         className="container flex-column with-image-background unselectable"
         style={{
-          backgroundImage:
-            "linear-gradient(to top, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/home_background_2.jpg')",
+          backgroundImage: `linear-gradient(to top, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${
+            process.env.PUBLIC_URL + "/home_background_2.jpg"
+          })`,
         }}
       >
         <div className="title-wrapper">{appTitle}</div>

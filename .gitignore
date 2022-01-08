@@ -2,7 +2,7 @@ node_modules/
 .nyc_output
 coverage
 build/
-poc_scripts/
+helper_scripts/
 json_db/
 
 # testing

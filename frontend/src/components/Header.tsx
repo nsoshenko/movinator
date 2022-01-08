@@ -12,7 +12,7 @@ const Header: FC = () => {
     <header>
       <img
         className="home-button"
-        src="/home.png"
+        src={process.env.PUBLIC_URL + "/home.png"}
         alt="home"
         onClick={handleClick}
       ></img>

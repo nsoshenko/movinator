@@ -73,6 +73,7 @@ const Result: FC = () => {
   const noOnClickHandler = (): void => setShowSuggestionModal(false);
 
   const choosePlaceholderPicture = (): string =>
+    process.env.PUBLIC_URL +
     `/placeholders/movies_00${Math.ceil(Math.random() * 4)}.jpg`;
 
   const calculateTitleFontSize = (title: string): string => {

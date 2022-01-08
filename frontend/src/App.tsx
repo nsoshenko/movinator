@@ -6,7 +6,7 @@ import Result from "./pages/Result";
 function App() {
   return (
     <>
-      <Router>
+      <Router basename={process.env.PUBLIC_URL}>
         <Switch>
           <Route path="/question">
             <Question />

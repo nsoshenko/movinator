@@ -14,7 +14,9 @@ const InstallationHint: FC<InstallationHintProps> = ({
   );
   const [isChecked, setIsChecked] = useState(false);
 
-  const desktopInstallIcon = <img src="/install.png" alt="install" />;
+  const desktopInstallIcon = (
+    <img src={process.env.PUBLIC_URL + "/install.png"} alt="install" />
+  );
   const desktopManualText = [
     <li key="0">Add this app to your home screen for easy access</li>,
     <li key="1">
@@ -24,7 +26,9 @@ const InstallationHint: FC<InstallationHintProps> = ({
     <li key="3">An app shortcut will be created on the home screen</li>,
   ];
 
-  const mobileInstallationIcon = <img src="/installMobile.png" alt="install" />;
+  const mobileInstallationIcon = (
+    <img src={process.env.PUBLIC_URL + "/installMobile.png"} alt="install" />
+  );
   const mobileManualText = [
     <li key="0">Add this app to your home screen for easy access</li>,
     <li key="1">Click {mobileInstallationIcon}, then "Add to home screen"</li>,
@@ -62,7 +66,7 @@ const InstallationHint: FC<InstallationHintProps> = ({
       {isLandscape && (
         <img
           className="closeButton"
-          src="/close.png"
+          src={process.env.PUBLIC_URL + "/close.png"}
           alt="close"
           onClick={closeInstallationHintHandler}
         />

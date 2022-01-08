@@ -19,7 +19,10 @@ const SessionModal: FC<SessionModalProps> = ({ modalText, buttons }) => {
   return (
     <div className="sessionModal unselectable">
       <div className="sessionModalContent">
-        <img src="/clapperboard.png" alt="clapperboardIcon" />
+        <img
+          src={process.env.PUBLIC_URL + "/clapperboard.png"}
+          alt="clapperboardIcon"
+        />
         {typeof modalText === "string" ? (
           <p>{modalText}</p>
         ) : (
