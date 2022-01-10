@@ -1,5 +1,3 @@
-// Universal utility functions
-
 // Required input for weighted randomizer
 export type ValuesAndWeights = {
   [option: string | number]: number;
