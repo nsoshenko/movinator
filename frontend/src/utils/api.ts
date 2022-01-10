@@ -1,1 +1,1 @@
-export const movinatorApiUrl = "http://localhost:3002/api";
+export const movinatorApiUrl = "https://movinator.lhr.rocks/api";
