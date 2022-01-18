@@ -256,14 +256,21 @@ header {
 
 .installationHint .contentWrapper {
   width: auto;
+  padding-left: 3vw;
+  padding-right: 3vw;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
   align-items: flex-start;
 }
 
-.installationHint ol {
+.installationHint p {
   margin: 28px 0 0;
+  font-size: 2.5vmax !important;
+}
+
+.installationHint ol {
+  margin: 0;
   padding-left: 2vmax;
 }
 
@@ -325,7 +332,7 @@ header {
   flex-basis: 45%;
 
   background-size: cover;
-  background-position-x: center;
+  background-position: center;
 
   cursor: pointer;
 }
@@ -402,6 +409,7 @@ header {
   color: white;
   width: 62.8%;
   margin-bottom: 5.13%;
+  padding-left: 1.04vw;
 
   justify-content: flex-start;
   align-content: flex-start;
@@ -425,6 +433,7 @@ header {
 
 .button-container {
   flex-basis: 15.5%;
+  margin-bottom: 8px;
 
   font-size: 2.08vw;
   color: rgba(229, 9, 20, 1);
@@ -474,7 +483,7 @@ p {
 }
 
 /* TABLET & MOBILE */
-@media screen and (max-width: 1024px) and (orientation: portrait) {
+@media screen and (max-width: 1080px) and (orientation: portrait) {
   /* Common */
   .footer {
     display: none;
@@ -492,7 +501,7 @@ p {
 
   .size-description-wrapper {
     font-size: 3vh !important;
-    width: 100% !important;
+    width: 94% !important;
   }
 
   #start-button {
@@ -537,8 +546,12 @@ p {
     height: 320px;
   }
 
-  .sessionModal .yesNoWrapper {
-    margin-top: 30px !important;
+  .sessionModal img {
+    margin-top: 12% !important;
+  }
+
+  .sessionModal .buttonsWrapper {
+    margin-top: 8% !important;
   }
 
   /* Result screen */
@@ -554,7 +567,6 @@ p {
 
     display: flex;
     flex-flow: column-reverse;
-    background-size: cover !important;
     background-repeat: no-repeat;
   }
 
@@ -618,7 +630,7 @@ p {
 }
 
 /* TABLET ONLY */
-@media screen and (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+@media screen and (min-width: 768px) and (max-width: 1080px) and (orientation: portrait) {
   /* Common */
   .container {
     flex-direction: column;
@@ -701,5 +713,35 @@ p {
 
   .text-margin-top {
     margin-top: 1.35vh !important;
+  }
+}
+
+/* MOBILE LANDSCAPE */
+@media screen and (max-width: 896px) and (orientation: landscape) {
+  .bottom-box {
+    padding-left: 5vw !important;
+    padding-right: 5vw !important;
+    padding-bottom: 2vw;
+  }
+
+  .home-button {
+    left: 5vw !important;
+  }
+
+  .text-container {
+    height: 10% !important;
+  }
+
+  .sessionModalContent {
+    width: 320px !important;
+    height: 320px !important;
+  }
+
+  .sessionModal img {
+    margin-top: 12% !important;
+  }
+
+  .sessionModal .buttonsWrapper {
+    margin-top: 8% !important;
   }
 }

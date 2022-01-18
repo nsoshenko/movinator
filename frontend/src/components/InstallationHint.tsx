@@ -72,6 +72,7 @@ const InstallationHint: FC<InstallationHintProps> = ({
         />
       )}
       <div className="contentWrapper">
+        <p>For Better Experience:</p>
         <ol>
           <BrowserView>{desktopManualText}</BrowserView>
           <MobileView>{mobileManualText}</MobileView>
