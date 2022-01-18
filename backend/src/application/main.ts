@@ -9,6 +9,7 @@ import {
   ResultResponse,
   isAnswerRequest,
   SessionStageResponse,
+  SessionDeletedResponse,
 } from "./types/types";
 import { Movie, MovieResult } from "../domain/types/types";
 import { weightedRandomizer } from "../utils/randomizer";
@@ -16,7 +17,7 @@ import { questionFactory } from "./questionFactory";
 import { answerProcessor } from "./answerProcessor";
 import TmdbApi from "./tmdbApi";
 
-// Check session endpoint handler
+// Session endpoint handlers
 export const sessionCheckHandler = async (
   sessionData: OnlyIdRequest,
   allSessionsStorage: SessionStorage
@@ -25,6 +26,16 @@ export const sessionCheckHandler = async (
   const session = allSessionsStorage.getSessionById(sessionId);
   if (!session) throw new Error(`No session with ID ${sessionId} was found`);
   else return { sessionId: "" + sessionId, finished: session.isFinished() };
+};
+
+export const sessionCloseHandler = async (
+  sessionData: OnlyIdRequest,
+  allSessionsStorage: SessionStorage
+): Promise<SessionDeletedResponse> => {
+  const sessionId = Number(sessionData.sessionId);
+  const deleted = allSessionsStorage.closeSession(sessionId);
+  if (!deleted) throw new Error(`No session with ID ${sessionId} was found`);
+  else return { sessionId: "" + sessionId, deleted: deleted };
 };
 
 // Question endpoint handlers

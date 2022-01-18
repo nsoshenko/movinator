@@ -4,6 +4,7 @@ coverage
 build/
 helper_scripts/
 json_db/
+dist/
 
 # testing
 /coverage

@@ -1,11 +1,10 @@
-import axios from "axios";
 import { FC, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { isIOS } from "react-device-detect";
 import InstallationHint from "../components/InstallationHint";
 import ModalWithButtons from "../components/ModalWithButtons";
 import { SessionStageResponse } from "../types/types";
-import { movinatorApiUrl } from "../utils/api";
+import { checkSession } from "../utils/api";
 import { getCookieWithExpirationCheck } from "../utils/cookies";
 
 const Home: FC = () => {
@@ -21,9 +20,7 @@ const Home: FC = () => {
       const sessionId = getCookieWithExpirationCheck("sessionId");
       if (sessionId) {
         try {
-          const response = await axios.post(movinatorApiUrl + "/check", {
-            sessionId: sessionId,
-          });
+          const response = await checkSession(sessionId);
           if (response.status === 200) {
             setShowSessionModal(true);
             const sessionData = response.data as SessionStageResponse;
@@ -58,7 +55,7 @@ const Home: FC = () => {
 
   const appTitle = "Movinator";
   const appDescription =
-    "Movinator is an application that will help you choose a movie to watch, based on your preferences";
+    "Movinator is an application that helps you choose a movie to watch, based on your preferences";
 
   const redirectHandler = (route: "/question" | "/result") => {
     history.push(route);

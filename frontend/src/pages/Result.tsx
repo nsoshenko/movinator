@@ -1,10 +1,9 @@
-import axios from "axios";
 import { FC, useCallback, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import Header from "../components/Header";
 import ModalWithButtons from "../components/ModalWithButtons";
 import { MovieDetails, QuestionResponse, ResultResponse } from "../types/types";
-import { movinatorApiUrl } from "../utils/api";
+import { closeSession, getResult, getSimilarMovie } from "../utils/api";
 import {
   getCookieWithExpirationCheck,
   setCookieWithExpiration,
@@ -21,9 +20,7 @@ const Result: FC = () => {
   const fetchResult = useCallback(
     async (sessionId: string) => {
       try {
-        const response = await axios.post(movinatorApiUrl + "/question", {
-          sessionId: sessionId,
-        });
+        const response = await getResult(sessionId);
         const responseData = response.data as unknown as ResultResponse;
         setCookieWithExpiration(
           "sessionId",
@@ -44,9 +41,7 @@ const Result: FC = () => {
   // Refactor it for DRY, please
   const fetchSimilarMovie = useCallback(async (sessionId: string) => {
     try {
-      const response = await axios.post(movinatorApiUrl + "/similar", {
-        sessionId: sessionId,
-      });
+      const response = await getSimilarMovie(sessionId);
       const responseData = response.data as unknown as ResultResponse;
       setCookieWithExpiration(
         "sessionId",
@@ -65,9 +60,16 @@ const Result: FC = () => {
     else setShowErrorModal(true);
   };
 
-  const yesOnClickHandler = (): void => {
-    localStorage.removeItem("sessionId");
-    history.push("/question");
+  const yesOnClickHandler = async () => {
+    const sessionId = getCookieWithExpirationCheck("sessionId");
+    if (sessionId) {
+      try {
+        await closeSession(sessionId);
+      } finally {
+        localStorage.removeItem("sessionId");
+        history.push("/");
+      }
+    }
   };
 
   const noOnClickHandler = (): void => setShowSuggestionModal(false);

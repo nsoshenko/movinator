@@ -91,6 +91,11 @@ export type SessionStageResponse = {
   finished: boolean;
 };
 
+export type SessionDeletedResponse = {
+  sessionId: string;
+  deleted: true;
+};
+
 export type QuestionResponse = {
   sessionId: number;
   question: Question;

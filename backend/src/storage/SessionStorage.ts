@@ -190,4 +190,31 @@ export default class SessionStorage {
       ? this.sessionStorage[index]
       : undefined;
   };
+
+  private deleteSession = (sessionIndex: number): void => {
+    const lastIndex = this.sessionStorage.length - 1;
+
+    // Swap needed to delete session with the last one
+    [this.sessionStorage[sessionIndex], this.sessionStorage[lastIndex]] = [
+      this.sessionStorage[lastIndex],
+      this.sessionStorage[sessionIndex],
+    ];
+
+    // Set new index for the previously last session
+    this.sessionStorageIndexes.set(
+      this.sessionStorage[sessionIndex].id,
+      sessionIndex
+    );
+
+    // Delete needed session and its index
+    this.sessionStorageIndexes.delete(this.sessionStorage[lastIndex].id);
+    this.sessionStorage.pop();
+  };
+
+  closeSession = (id: number): boolean => {
+    const index = this.sessionStorageIndexes.get(id);
+    if (!index) return false;
+    this.deleteSession(index);
+    return true;
+  };
 }

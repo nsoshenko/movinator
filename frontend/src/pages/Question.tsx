@@ -1,4 +1,3 @@
-import axios from "axios";
 import { FC, useCallback, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import Divider from "../components/Divider";
@@ -10,14 +9,13 @@ import {
   QuestionResponse,
   ResultResponse,
 } from "../types/types";
-import { movinatorApiUrl } from "../utils/api";
+import { getFirstQuestion, getNextQuestionOrResult } from "../utils/api";
 import {
   getCookieWithExpirationCheck,
   setCookieWithExpiration,
 } from "../utils/cookies";
 
 const Question: FC = () => {
-  const apiUrl = movinatorApiUrl + "/question";
   const imageUrl = "https://image.tmdb.org/t/p/w780";
   const history = useHistory();
 
@@ -53,15 +51,15 @@ const Question: FC = () => {
 
       try {
         if (!sessionId) {
-          const response = await axios.get(apiUrl);
+          const response = await getFirstQuestion();
           const responseData = response.data as QuestionResponse;
           processQuestionResponse(responseData);
         } else {
           console.log(answerData);
-          const response = await axios.post(apiUrl, {
-            sessionId: sessionId,
-            question: answerData?.question,
-          });
+          const response = await getNextQuestionOrResult(
+            sessionId,
+            answerData?.question
+          );
           const responseData = response.data as unknown as
             | QuestionResponse
             | ResultResponse;
@@ -73,7 +71,7 @@ const Question: FC = () => {
         setShowErrorModal(true);
       }
     },
-    [history, apiUrl]
+    [history]
   );
 
   useEffect(() => {

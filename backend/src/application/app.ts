@@ -4,6 +4,7 @@ import {
   questionGetHandler,
   questionPostHandler,
   sessionCheckHandler,
+  sessionCloseHandler,
   similarMovieHandler,
 } from "./main";
 import { downloadStorage } from "../utils/dropbox";
@@ -29,6 +30,7 @@ app.use(cors());
       keywords: process.env.KEYWORDS_DB_PATH,
     });
   });
+  // const movieStorage: MovieStorage = await MovieStorage.buildOnline();
 
   const allSessionsStorage: SessionStorage = new SessionStorage();
 
@@ -113,6 +115,24 @@ app.use(cors());
         return res.status(200).send({
           ...response,
         });
+      } catch (err) {
+        console.log(err);
+        return res.status(404).send(err);
+      }
+    }
+  );
+
+  app.post(
+    "/api/close",
+    async (req: Request, res: Response): Promise<Response> => {
+      console.log("Request to close session");
+      try {
+        const response = await sessionCloseHandler(
+          req.body,
+          allSessionsStorage
+        );
+        console.log(response);
+        return res.status(200).send({ ...response });
       } catch (err) {
         console.log(err);
         return res.status(404).send(err);

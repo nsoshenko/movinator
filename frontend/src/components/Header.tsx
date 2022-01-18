@@ -1,12 +1,21 @@
 import { FC } from "react";
 import { useHistory } from "react-router-dom";
+import { closeSession } from "../utils/api";
+import { getCookieWithExpirationCheck } from "../utils/cookies";
 
 const Header: FC = () => {
   const history = useHistory();
 
-  const handleClick = (): void => {
-    localStorage.removeItem("sessionId");
-    history.push("/");
+  const handleHomeClick = async () => {
+    const sessionId = getCookieWithExpirationCheck("sessionId");
+    if (sessionId) {
+      try {
+        await closeSession(sessionId);
+      } finally {
+        localStorage.removeItem("sessionId");
+        history.push("/");
+      }
+    }
   };
   return (
     <header>
@@ -14,7 +23,7 @@ const Header: FC = () => {
         className="home-button"
         src={process.env.PUBLIC_URL + "/home.png"}
         alt="home"
-        onClick={handleClick}
+        onClick={handleHomeClick}
       ></img>
       Movinator
     </header>

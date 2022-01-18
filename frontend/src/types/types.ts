@@ -50,7 +50,7 @@ export type MovieDetails = {
   director: string;
 };
 
-type Question = {
+export type Question = {
   id: number;
   type: QuestionType;
   options: [FormattedOption, FormattedOption, FormattedOption];
