@@ -26,6 +26,7 @@ import { BannedQuestionOptions, HelperStorageLabel } from "../storage/types";
 import {
   questionTypeToEndpoint,
   questionTypeToMovieProperty,
+  ratingToPhrase,
   TmdbEndpoint,
 } from "./types/mappings";
 import { isPropertyWithImages } from "./filterPredicates";
@@ -90,7 +91,10 @@ export const questionFactory = async (
         }
       }
     } else {
-      questionDetails = createOptionNames(chosenCandidate[2]);
+      questionDetails = createOptionNames(
+        chosenCandidate[0],
+        chosenCandidate[2]
+      );
     }
 
     if (!questionDetails) {
@@ -355,8 +359,13 @@ const getOptionDetailsFromApi = async (
   // }
 };
 
-const createOptionNames = (options: string[]): Option[] =>
+const createOptionNames = (type: QuestionType, options: string[]): Option[] =>
   options.map((option) => {
+    if (type === "ratings")
+      return {
+        id: option,
+        name: ratingToPhrase[option],
+      };
     return {
       id: option,
       name: option,
