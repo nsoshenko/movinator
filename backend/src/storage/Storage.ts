@@ -7,6 +7,8 @@ import {
   isHelperStorageLabel,
   HelperStorageLabel,
 } from "./types";
+const dropboxV2Api = require("dropbox-v2-api");
+const StreamObject = require("stream-json/streamers/StreamObject");
 
 export default class MovieStorage {
   private persistentMovieStorage: MovieDetails[];
@@ -31,7 +33,13 @@ export default class MovieStorage {
     // Initialize operationalMovieStorage taking only needed data from persistentMovieStorage
     this.operationalMovieStorage = this.persistentMovieStorage.reduce(
       (final: Movie[], movie) => {
-        if (!movie.adult && movie.cast && movie.crew && movie.runtime >= 60)
+        if (
+          !movie.adult &&
+          movie.cast &&
+          movie.crew &&
+          movie.runtime >= 60 &&
+          !movie.production_company_ids.includes(6695)
+        )
           final.push({
             id: movie.id,
             budget: movie.budget,
@@ -68,6 +76,49 @@ export default class MovieStorage {
       });
     }
   }
+
+  // // Build method from Dropbox storage
+  // static buildOnline = async (): Promise<MovieStorage> => {
+  //   return new MovieStorage(await this.downloadMoviesData());
+  // };
+
+  // private static downloadMoviesData = async (): Promise<any> => {
+  //   const dropbox = dropboxV2Api.authenticate({
+  //     token: "s6qmSdeP0toAAAAAAAAAAXgXGysEi2_UPg1QOTfQb1M6W-VV_D6kiioEBzgp8HqX",
+  //   });
+
+  //   return new Promise((resolve, reject) => {
+  //     const fileStreamObject = dropbox({
+  //       resource: "files/download",
+  //       parameters: {
+  //         path: "/json_db/dev_movies.json",
+  //       },
+  //     });
+  //     const jsonStreamObject = StreamObject.withParser();
+  //     fileStreamObject.pipe(jsonStreamObject.input);
+  //     let data = {};
+  //     const startTime = Date.now();
+
+  //     // 3 GB RAM
+  //     jsonStreamObject.on("data", (chunk: any) => {
+  //       data = { [chunk.key]: chunk.value };
+  //     });
+
+  //     jsonStreamObject.on("error", (err: Error) => {
+  //       reject(err);
+  //     });
+
+  //     return jsonStreamObject.on("end", () => {
+  //       // fileStreamObject.close();
+  //       if (global.gc) global.gc();
+  //       console.log(
+  //         "Object: READING IS DONE: " + (Date.now() - startTime) / 1000 + " ms"
+  //       );
+  //       // console.log(data.movies.length);
+  //       resolve(data);
+  //     });
+  //   });
+  // };
 
   // Methods for manipulations with persistentMovieStorage
   getFullMovieDetailsById = (id: number): MovieDetails | undefined => {
