@@ -213,7 +213,7 @@ export default class SessionStorage {
 
   closeSession = (id: number): boolean => {
     const index = this.sessionStorageIndexes.get(id);
-    if (!index) return false;
+    if (typeof index === "undefined") return false;
     this.deleteSession(index);
     return true;
   };
