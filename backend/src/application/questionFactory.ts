@@ -24,6 +24,7 @@ import {
 } from "../domain/types/types";
 import { BannedQuestionOptions, HelperStorageLabel } from "../storage/types";
 import {
+  languageShortToFull,
   questionTypeToEndpoint,
   questionTypeToMovieProperty,
   ratingToPhrase,
@@ -351,21 +352,13 @@ const getOptionDetailsFromApi = async (
       throw error;
     }
   }
-  // if (optionDetails && Object.keys(optionDetails).length > 0) {
-  //   if (questionType === "cast" || questionType === "crew") {
-  //     ds.helperStorages.people.push(optionDetails);
-  //   } else ds.helperStorages[questionType].push(optionDetails);
-  //   // to implement async writing of the updated storage to DB
-  // }
 };
 
 const createOptionNames = (type: QuestionType, options: string[]): Option[] =>
   options.map((option) => {
-    if (type === "ratings")
-      return {
-        id: option,
-        name: ratingToPhrase[option],
-      };
+    if (type === "ratings") return { id: option, name: ratingToPhrase[option] };
+    if (type === "languages")
+      return { id: option, name: languageShortToFull[option] };
     return {
       id: option,
       name: option,
@@ -407,14 +400,3 @@ const questionFormatter = (
 
 // Increments and returns global variable questionId
 const generateQuestionId = () => questionIdCounter++;
-
-// const doesQuestionNeedDetails = (type: QuestionType): boolean => {
-//   const needDetails = [
-//     "genres",
-//     "cast",
-//     "crew",
-//     "production_companies",
-//     "keywords",
-//   ];
-//   return needDetails.includes(type);
-// };
