@@ -5,7 +5,7 @@ body {
   height: 100%;
   width: 100%;
   overflow-x: hidden;
-  overflow-y: auto;
+  overflow-y: hidden;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
@@ -409,7 +409,7 @@ header {
   color: white;
   width: 62.8%;
   margin-bottom: 5.13%;
-  padding-left: 1.04vw;
+  padding-left: 3vw;
 
   justify-content: flex-start;
   align-content: flex-start;
@@ -429,6 +429,7 @@ header {
 .description-text-wrapper {
   flex-basis: 84.5%;
   display: flex;
+  overflow-y: auto;
 }
 
 .button-container {
@@ -527,6 +528,34 @@ p {
   .text-container {
     font-size: 3.33vh !important;
   }
+
+  /* Result screen */
+  .image-title-info-wrapper {
+    display: block !important;
+  }
+
+  .image-title-info-wrapper h2 {
+    font-size: 1.45vh !important;
+  }
+
+  .bottom-box {
+    flex-flow: column;
+    flex-basis: 69.2% !important;
+    justify-content: start !important;
+    padding-left: 3vw;
+    padding-right: 3vw;
+  }
+
+  .button-container {
+    position: absolute;
+    height: 9.7%;
+    min-height: 87px;
+    bottom: 0;
+    left: 0;
+    right: 3vw;
+    font-size: 4.46vh !important;
+    background-color: #000000;
+  }
 }
 
 /* MOBILE ONLY */
@@ -570,20 +599,6 @@ p {
     background-repeat: no-repeat;
   }
 
-  .image-title-info-wrapper {
-    display: block !important;
-  }
-
-  .image-title-info-wrapper h2 {
-    font-size: 1.45vh !important;
-  }
-
-  .bottom-box {
-    flex-flow: column;
-    flex-basis: 69.2% !important;
-    justify-content: start !important;
-  }
-
   .bottom-title-info-wrapper {
     display: none;
   }
@@ -594,18 +609,6 @@ p {
 
   .description-container {
     flex-basis: auto !important;
-  }
-
-  .button-container {
-    position: absolute;
-    width: 100%;
-    height: 9.7%;
-    min-height: 87px;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    font-size: 4.46vh !important;
-    background-color: #000000;
   }
 
   #similar-button {
@@ -655,20 +658,6 @@ p {
     flex-flow: column-reverse;
   }
 
-  .image-title-info-wrapper {
-    display: block !important;
-  }
-
-  .image-title-info-wrapper h2 {
-    font-size: 1.45vh !important;
-  }
-
-  .bottom-box {
-    flex-flow: column;
-    flex-basis: 69.2% !important;
-    justify-content: start !important;
-  }
-
   .bottom-title-info-wrapper {
     display: none;
   }
@@ -679,18 +668,6 @@ p {
 
   .description-container {
     flex-basis: auto !important;
-  }
-
-  .button-container {
-    position: absolute;
-    width: 100%;
-    height: 9.7%;
-    min-height: 87px;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    font-size: 4.46vh !important;
-    background-color: #000000;
   }
 
   #similar-button {
