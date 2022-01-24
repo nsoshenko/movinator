@@ -13,7 +13,7 @@ import { Options } from "./types/types";
 import SessionStorage from "../storage/SessionStorage";
 
 const app: Application = express();
-const port = 3002;
+const port = process.env.PORT || 3002;
 
 // Body parsing middleware
 app.use(express.json());
