@@ -7,7 +7,6 @@ import {
   sessionCloseHandler,
   similarMovieHandler,
 } from "./main";
-import { downloadStorage } from "../utils/dropbox";
 import { optionsCounter } from "./optionsCounter";
 import MovieStorage from "../storage/Storage";
 import { Options } from "./types/types";
@@ -21,16 +20,7 @@ app.use(express.json());
 app.use(cors());
 
 (async () => {
-  // Initialize in-mem storage from JSON files downloaded from Dropbox
-  const movieStorage: MovieStorage = await downloadStorage().then(() => {
-    return new MovieStorage(process.env.MOVIE_DB_PATH as string, {
-      genres: process.env.GENRES_DB_PATH,
-      people: process.env.PEOPLE_DB_PATH,
-      production_companies: process.env.PRODUCTION_COMPANIES_DB_PATH,
-      keywords: process.env.KEYWORDS_DB_PATH,
-    });
-  });
-  // const movieStorage: MovieStorage = await MovieStorage.buildOnline();
+  const movieStorage: MovieStorage = await MovieStorage.buildOnline();
 
   const allSessionsStorage: SessionStorage = new SessionStorage();
 

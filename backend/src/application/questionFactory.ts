@@ -13,7 +13,6 @@ import {
   Option,
   doesQuestionNeedDetails,
 } from "./types/types";
-import TmdbApi from "./tmdbApi";
 import MovieStorage from "../storage/Storage";
 import {
   Details,
@@ -31,9 +30,9 @@ import {
   TmdbEndpoint,
 } from "./types/mappings";
 import { isPropertyWithImages } from "./filterPredicates";
+import { getDetailsForEntity, getMovieGenresList } from "./adapters/tmdbApi";
 
 var questionIdCounter = 1; // Needed to generate questionIds
-const api = new TmdbApi();
 
 // Question factory flow
 export const questionFactory = async (
@@ -332,9 +331,8 @@ const getOptionDetailsFromApi = async (
 ): Promise<Details | undefined> => {
   // let optionDetails = {};
   if (type === "genres") {
-    const requestUrl = `${endpoint}?api_key=${api.key}`;
     try {
-      const response = await api.instance.get(requestUrl);
+      const response = await getMovieGenresList();
       const optionDetails = (
         response.data[Object.keys(response.data)[0]] as GenreDetails[]
       ).find(({ id }) => id.toString() === optionId);
@@ -343,9 +341,8 @@ const getOptionDetailsFromApi = async (
       throw error;
     }
   } else {
-    const requestUrl = `${endpoint}/${optionId}?api_key=${api.key}`;
     try {
-      const response = await api.instance.get(requestUrl);
+      const response = await getDetailsForEntity(endpoint, +optionId);
       const optionDetails = response.data as Details;
       return optionDetails;
     } catch (error) {
@@ -377,7 +374,9 @@ const getBackdropFromInternalStorage = (
     .slice(0, 1000);
   const randomMovie = movies[Math.floor(Math.random() * movies.length)];
   console.log(randomMovie);
-  return randomMovie ? randomMovie.backdrop_path : undefined;
+  return randomMovie && randomMovie.backdrop_path
+    ? randomMovie.backdrop_path
+    : undefined;
 };
 
 const questionFormatter = (

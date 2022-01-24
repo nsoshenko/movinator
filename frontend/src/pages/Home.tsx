@@ -4,7 +4,7 @@ import { isIOS } from "react-device-detect";
 import InstallationHint from "../components/InstallationHint";
 import ModalWithButtons from "../components/ModalWithButtons";
 import { SessionStageResponse } from "../types/types";
-import { checkSession } from "../utils/api";
+import { checkSession } from "../adapters/api";
 import { getCookieWithExpirationCheck } from "../utils/cookies";
 
 const Home: FC = () => {

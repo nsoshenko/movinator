@@ -1,0 +1,40 @@
+datasource db {
+  provider = "postgresql"
+  url      = "postgres://uckxbcdkeqcckq:624c7a17654ada98a37a18d080c79c470077691667371ad1e96aa3ab3121c867@ec2-50-19-32-96.compute-1.amazonaws.com:5432/da57kqefaoi2af"
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["dataproxy"]
+}
+
+model Movie {
+  id                     Int      @id
+  adult                  Boolean
+  backdrop_path          String?
+  belongs_to_collection  Int[]
+  budget                 Int
+  homepage               String?
+  imdb_id                String?
+  original_language      String
+  original_title         String
+  overview               String
+  popularity             Float
+  poster_path            String?
+  production_countries   String[]
+  release_date           String
+  revenue                Int
+  runtime                Int?
+  status                 String
+  tagline                String
+  title                  String
+  video                  Boolean
+  vote_average           Decimal
+  vote_count             Int
+  genre_ids              Int[]
+  production_company_ids Int[]
+  cast                   Int[]
+  crew                   Int[]
+  keyword_ids            Int[]
+  director               String?
+}

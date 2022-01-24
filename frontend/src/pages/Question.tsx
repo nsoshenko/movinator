@@ -9,7 +9,7 @@ import {
   QuestionResponse,
   ResultResponse,
 } from "../types/types";
-import { getFirstQuestion, getNextQuestionOrResult } from "../utils/api";
+import { getFirstQuestion, getNextQuestionOrResult } from "../adapters/api";
 import {
   getCookieWithExpirationCheck,
   setCookieWithExpiration,

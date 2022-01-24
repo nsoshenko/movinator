@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { useHistory } from "react-router-dom";
-import { closeSession } from "../utils/api";
+import { closeSession } from "../adapters/api";
 import { getCookieWithExpirationCheck } from "../utils/cookies";
 
 const Header: FC = () => {

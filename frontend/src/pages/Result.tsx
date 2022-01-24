@@ -3,7 +3,7 @@ import { useHistory } from "react-router-dom";
 import Header from "../components/Header";
 import ModalWithButtons from "../components/ModalWithButtons";
 import { MovieDetails, QuestionResponse, ResultResponse } from "../types/types";
-import { closeSession, getResult, getSimilarMovie } from "../utils/api";
+import { closeSession, getResult, getSimilarMovie } from "../adapters/api";
 import {
   getCookieWithExpirationCheck,
   setCookieWithExpiration,

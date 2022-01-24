@@ -5,7 +5,7 @@ export type ReleaseStatus = "Released";
 
 export type MovieDetails = {
   adult: boolean;
-  backdrop_path: string;
+  backdrop_path: string | null;
   belongs_to_collection: number[];
   budget: number;
   homepage: string;
@@ -37,13 +37,13 @@ export type MovieDetails = {
 export type Movie = Pick<
   MovieDetails,
   | "id"
-  | "budget"
+  // | "budget"
   | "original_language"
   | "title"
   | "popularity"
   | "release_date"
-  | "revenue"
-  | "runtime"
+  // | "revenue"
+  // | "runtime"
   | "vote_average"
   | "vote_count"
   | "genre_ids"
@@ -52,7 +52,7 @@ export type Movie = Pick<
   | "crew"
   | "keyword_ids"
   | "backdrop_path"
-  | "director"
+  // | "director"
 >;
 
 export type MovieResult = Omit<MovieDetails, "cast"> & {

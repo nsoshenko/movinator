@@ -15,7 +15,8 @@ import { Movie, MovieResult } from "../domain/types/types";
 import { weightedRandomizer } from "../utils/randomizer";
 import { questionFactory } from "./questionFactory";
 import { answerProcessor } from "./answerProcessor";
-import TmdbApi from "./tmdbApi";
+import { getRecommendationsForMovie } from "./adapters/tmdbApi";
+import { getMovieDetailsFromDbById } from "./adapters/prismaDb";
 
 // Session endpoint handlers
 export const sessionCheckHandler = async (
@@ -73,7 +74,7 @@ export const questionPostHandler = async (
   // Check if session already has stored result
   const sessionResult = session.result;
   if (sessionResult) {
-    const sessionResultDetails = prepareMovieResult(
+    const sessionResultDetails = await prepareMovieResult(
       sessionResult,
       movieStorage
     );
@@ -93,7 +94,7 @@ export const questionPostHandler = async (
     if (readyToFinish(session, READY_TO_FINISH_THRESHOLD)) {
       const resultMovie = pickResult(session.getMovies());
       if (resultMovie) {
-        const resultMovieDetails = prepareMovieResult(
+        const resultMovieDetails = await prepareMovieResult(
           resultMovie.id,
           movieStorage
         );
@@ -137,7 +138,7 @@ export const similarMovieHandler = async (
         Math.floor(Math.random() * filteredRecommendations.length)
       ];
     try {
-      const movieResult = prepareMovieResult(
+      const movieResult = await prepareMovieResult(
         randomRecommendationId,
         movieStorage
       );
@@ -171,11 +172,11 @@ const pickResult = (arr: Movie[]): Movie | undefined => {
   return arr[randomMovieIndex];
 };
 
-const prepareMovieResult = (
+const prepareMovieResult = async (
   id: number,
   movieStorage: MovieStorage
-): MovieResult => {
-  const resultMovieDetails = movieStorage.getFullMovieDetailsById(id);
+): Promise<MovieResult> => {
+  const resultMovieDetails = await getMovieDetailsFromDbById(id);
   if (resultMovieDetails) {
     const resultMovieCast = resultMovieDetails.cast
       .slice(0, 20)
@@ -194,11 +195,7 @@ const prepareMovieResult = (
 };
 
 const getRecommendationsFromApi = async (id: number): Promise<number[]> => {
-  const api = new TmdbApi();
-
-  const response = await api.instance.get(
-    `/movie/${id}/recommendations?api_key=${api.key}`
-  );
+  const response = await getRecommendationsForMovie(id);
   const recommendations = response.data.results as Movie[];
   return recommendations.map((movie) => movie.id);
 };

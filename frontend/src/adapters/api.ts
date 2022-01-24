@@ -2,35 +2,35 @@ import axios from "axios";
 import { Question } from "../types/types";
 
 // Route
-const movinatorApiUrl = "https://movinator.lhr.rocks/api";
+const movinatorApi = axios.create();
+movinatorApi.defaults.baseURL = "http://192.168.1.84:3002/api";
 
 // Requests
-export const getFirstQuestion = async () =>
-  axios.get(movinatorApiUrl + "/question");
+export const getFirstQuestion = async () => movinatorApi.get("/question");
 
 export const getNextQuestionOrResult = async (
   sessionId: string,
   questionData?: Question
 ) =>
-  axios.post(movinatorApiUrl + "/question", {
+  movinatorApi.post("/question", {
     sessionId: sessionId,
     question: questionData,
   });
 
 export const getResult = async (sessionId: string) =>
-  axios.post(movinatorApiUrl + "/question", {
+  movinatorApi.post("/question", {
     sessionId: sessionId,
   });
 
 export const getSimilarMovie = async (sessionId: string) =>
-  axios.post(movinatorApiUrl + "/similar", { sessionId: sessionId });
+  movinatorApi.post("/similar", { sessionId: sessionId });
 
 export const checkSession = async (sessionId: string) =>
-  axios.post(movinatorApiUrl + "/check", {
+  movinatorApi.post("/check", {
     sessionId: sessionId,
   });
 
 export const closeSession = async (sessionId: string) =>
-  axios.post(movinatorApiUrl + "/close", {
+  movinatorApi.post("/close", {
     sessionId: sessionId,
   });

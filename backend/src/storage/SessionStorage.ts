@@ -1,6 +1,6 @@
 // Class with implementation of in-mem storage for all temporary session data
 import { Movie } from "../domain/types/types";
-import { MoviePredicate, QuestionType } from "../application/types/types";
+import { QuestionType } from "../application/types/types";
 import { BannedQuestionOptions } from "./types";
 
 export class Session {
